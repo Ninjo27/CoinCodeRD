@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nhận Code Đổi Đồng Xu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      padding: 50px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 15px 25px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #codeBox {
+      margin-top: 30px;
+      font-size: 24px;
+      color: #0033cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 Xem quảng cáo để nhận mã đổi xu 🎁</h1>
+  <button onclick="showAd()">Xem Quảng Cáo</button>
+  <div id="codeBox"></div>
+
+  <script>
+    function generateCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    function showAd() {
+      window.open("https://www.profittableratecpm.com/necyqy5n3g?key=eeb0d13566b8633b423dee21a70ce2a", "_blank");
+
+      document.querySelector("button").disabled = true;
+      document.querySelector("button").innerText = "Đang mở quảng cáo...";
+
+      setTimeout(() => {
+        const code = generateCode();
+        document.getElementById("codeBox").innerHTML = `<strong>Mã của bạn: ${code}</strong>`;
+        document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
+        document.querySelector("button").disabled = false;
+      }, 15000);
+    }
+  </script>
+
+  <!-- 🧲 Mã quảng cáo dùng token riêng -->
+  <script type='text/javascript' src='https://www.profittableratecpm.com/e90ff5b14479f75c9e05d87a5c46136b/invoke.js'></script>
+  <div id='container-e90ff5b14479f75c9e05d87a5c46136b'></div>
+</body>
+</html>
