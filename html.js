@@ -1,5 +1,4 @@
 <form id="redeem-form">
-  <input type="text" name="username" placeholder="Tên Minecraft" required />
   <input type="text" name="code" placeholder="Nhập mã bạn nhận được" required />
   <button type="submit">Xác nhận</button>
 </form>
