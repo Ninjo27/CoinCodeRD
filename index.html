@@ -53,6 +53,11 @@
         document.getElementById("codeBox").innerHTML = `<strong>Mã của bạn: ${code}</strong>`;
         document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
         document.querySelector("button").disabled = false;
+              // 📢 Gửi mã đến Discord Webhook
+      fetch("YOUR_WEBHOOK_URL_HERE", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: `🎉 Mã đổi xu của bạn: **${code}**` })
       }, 15000);
     }
   </script>
