@@ -10,7 +10,7 @@ document.getElementById("redeem-form").onsubmit = async (e) => {
   const username = e.target.username.value;
   const code = e.target.code.value;
 
-  const res = await fetch("https://<your-replit-username>.repl.co/redeem", {
+  const res = await fetch("https://localhost:3000.repl.co/redeem", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, code })
