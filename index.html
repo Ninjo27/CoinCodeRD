@@ -32,34 +32,38 @@
   <button onclick="showAd()">Xem Quảng Cáo</button>
   <div id="codeBox"></div>
 
-  <script>
-    function generateCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let code = '';
-      for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
+ <script>
+  function generateCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return code;
+  }
 
-    function showAd() {
-      window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
+  function showAd() {
+    window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
 
-      document.querySelector("button").disabled = true;
-      document.querySelector("button").innerText = "Đang mở quảng cáo...";
+    document.querySelector("button").disabled = true;
+    document.querySelector("button").innerText = "Đang mở quảng cáo...";
 
-      setTimeout(() => {
-        const code = generateCode();
-        document.getElementById("codeBox").innerHTML = `<strong>Mã của bạn: ${code}</strong>`;
-        document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
-        document.querySelector("button").disabled = false;
-              // 📢 Gửi mã đến Discord Webhook
+    setTimeout(() => {
+      const code = generateCode();
+      document.getElementById("codeBox").innerHTML = `<strong>Mã của bạn: ${code}</strong>`;
+      document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
+      document.querySelector("button").disabled = false;
+
+      // 📢 Gửi mã đến Discord Webhook
       fetch("https://discord.com/api/webhooks/1377256078030672012/PGF5_yRJjr_3KSK3M8hzanNYtKaEag7l30zDexbqD5eifOctLd4m5FW3IW0aQ421fFCh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: `🎉 Mã đổi xu của bạn: **${code}**` })
-      }, 15000);
-    }
+      });
+
+    }, 15000); // Đặt toàn bộ hàm trong setTimeout
+  }
+
   </script>
 
   <!-- 🧲 Mã quảng cáo dùng token riêng -->
