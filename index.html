@@ -54,7 +54,7 @@
         document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
         document.querySelector("button").disabled = false;
               // 📢 Gửi mã đến Discord Webhook
-      fetch("YOUR_WEBHOOK_URL_HERE", {
+      fetch("https://discord.com/api/webhooks/1377256078030672012/PGF5_yRJjr_3KSK3M8hzanNYtKaEag7l30zDexbqD5eifOctLd4m5FW3IW0aQ421fFCh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: `🎉 Mã đổi xu của bạn: **${code}**` })
