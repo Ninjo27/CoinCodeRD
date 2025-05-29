@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nhận Quà Từ Quảng Cáo</title>
+  <title>Nhận Quà Xem Quảng Cáo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -9,7 +9,6 @@
       background-color: #f4f4f4;
       padding: 50px;
     }
-
     input, button {
       font-size: 18px;
       padding: 10px 15px;
@@ -17,18 +16,15 @@
       border: 1px solid #ccc;
       margin-top: 10px;
     }
-
     button {
       background-color: #28a745;
       color: white;
       border: none;
       cursor: pointer;
     }
-
     button:disabled {
       background-color: gray;
     }
-
     #status {
       margin-top: 20px;
       font-size: 18px;
@@ -37,29 +33,51 @@
   </style>
 </head>
 <body>
-  <h1>🎁 Nhập Tên & Xem Quảng Cáo Để Nhận Thưởng 🎁</h1>
+  <h1>🎁 Xem Quảng Cáo Để Nhận Thưởng 🎁</h1>
 
-  <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
-  <br>
-  <button onclick="watchAd()">Xem Quảng Cáo</button>
-  <div id="status"></div>
+  <div id="inputArea">
+    <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
+    <br>
+    <button onclick="saveName()">Xác nhận tên</button>
+  </div>
+
+  <div id="adArea" style="display:none;">
+    <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
+    <button onclick="watchAd()">Xem Quảng Cáo</button>
+    <div id="status"></div>
+  </div>
 
   <script>
-    function watchAd() {
-      const playerName = document.getElementById("playerName").value.trim();
-      if (!playerName) {
-        alert("❗ Vui lòng nhập tên Minecraft trước!");
+    function saveName() {
+      const name = document.getElementById("playerName").value.trim();
+      if (!name) {
+        alert("❗ Vui lòng nhập tên Minecraft.");
         return;
       }
+      localStorage.setItem("playerName", name);
+      showAdSection();
+    }
 
-      // Mở quảng cáo
+    function showAdSection() {
+      const name = localStorage.getItem("playerName");
+      if (name) {
+        document.getElementById("inputArea").style.display = "none";
+        document.getElementById("adArea").style.display = "block";
+        document.getElementById("displayName").innerText = name;
+      }
+    }
+
+    function watchAd() {
+      const playerName = localStorage.getItem("playerName");
+      if (!playerName) return;
+
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
 
-      const button = document.querySelector("button");
+      const button = document.querySelector("#adArea button");
       button.disabled = true;
-      button.innerText = "Đang mở quảng cáo...";
+      button.innerText = "Đang xem quảng cáo...";
 
-      document.getElementById("status").innerText = "⏳ Đang chờ hoàn tất quảng cáo (15 giây)...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 15 giây...";
 
       setTimeout(() => {
         // Gửi tên người chơi đến Discord Webhook
