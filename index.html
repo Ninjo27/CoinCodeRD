@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nhận Code Đổi Đồng Xu</title>
+  <title>Nhận Quà Từ Quảng Cáo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,63 +10,77 @@
       padding: 50px;
     }
 
+    input, button {
+      font-size: 18px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
     button {
-      font-size: 20px;
-      padding: 15px 25px;
       background-color: #28a745;
       color: white;
       border: none;
-      border-radius: 10px;
       cursor: pointer;
     }
 
-    #codeBox {
-      margin-top: 30px;
-      font-size: 24px;
+    button:disabled {
+      background-color: gray;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
       color: #0033cc;
     }
   </style>
 </head>
 <body>
-  <h1>🎁 Xem quảng cáo để nhận mã đổi xu 🎁</h1>
-  <button onclick="showAd()">Xem Quảng Cáo</button>
-  <div id="codeBox"></div>
+  <h1>🎁 Nhập Tên & Xem Quảng Cáo Để Nhận Thưởng 🎁</h1>
+
+  <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
+  <br>
+  <button onclick="watchAd()">Xem Quảng Cáo</button>
+  <div id="status"></div>
 
   <script>
-    function generateCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let code = '';
-      for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    function watchAd() {
+      const playerName = document.getElementById("playerName").value.trim();
+      if (!playerName) {
+        alert("❗ Vui lòng nhập tên Minecraft trước!");
+        return;
       }
-      return code;
-    }
 
-    function showAd() {
+      // Mở quảng cáo
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
 
-      document.querySelector("button").disabled = true;
-      document.querySelector("button").innerText = "Đang mở quảng cáo...";
+      const button = document.querySelector("button");
+      button.disabled = true;
+      button.innerText = "Đang mở quảng cáo...";
+
+      document.getElementById("status").innerText = "⏳ Đang chờ hoàn tất quảng cáo (15 giây)...";
 
       setTimeout(() => {
-        const code = generateCode();
-        document.getElementById("codeBox").innerHTML = `<strong>Mã của bạn: ${code}</strong>`;
-        document.querySelector("button").innerText = "Xem Quảng Cáo Khác";
-        document.querySelector("button").disabled = false;
-
-        // 📢 Gửi mã đến Discord Webhook
-        fetch("https://discord.com/api/webhooks/YOUR_WEBHOOK_URL_HERE", {
+        // Gửi tên người chơi đến Discord Webhook
+        fetch("https://discord.com/api/webhooks/1377650488799137893/ZvbmkERiuNlpbsM5qc13CKXRBmEUDyZjPyvOQ--wPZJb6Jub0oQjwvGRxOMnbbHns0iZ", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: `🎉 Mã đổi xu của bạn: **${code}**` })
+          body: JSON.stringify({
+            content: `🎮 Người chơi **${playerName}** đã xem quảng cáo và yêu cầu nhận thưởng.`
+          })
+        }).then(() => {
+          document.getElementById("status").innerText = "✅ Gửi thành công!";
+          button.innerText = "Xem Quảng Cáo Khác";
+          button.disabled = false;
+          document.getElementById("playerName").value = "";
+        }).catch(() => {
+          document.getElementById("status").innerText = "❌ Gửi thất bại. Kiểm tra lại webhook.";
+          button.innerText = "Xem Quảng Cáo";
+          button.disabled = false;
         });
-
-      }, 15000); // Đặt toàn bộ đoạn gửi Webhook trong setTimeout()
+      }, 15000);
     }
   </script>
-
-  <!-- 🧲 Mã quảng cáo dùng token riêng -->
-  <script type='text/javascript' src='https://www.profittableratecpm.com/e90ff5b14479f75c9e05d87a5c46136b/invoke.js'></script>
-  <div id='container-e90ff5b14479f75c9e05d87a5c46136b'></div>
 </body>
 </html>
