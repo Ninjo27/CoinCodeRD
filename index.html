@@ -32,31 +32,21 @@
       color: #0033cc;
     }
     
-    /* Hiệu ứng Spinner */
-    .spinner {
-      border: 8px solid #f3f3f3;
-      border-top: 8px solid #3498db;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 2s linear infinite;
-      margin: 20px auto;
-      display: none;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
     /* Hiệu ứng fade-in cho thông báo */
     .fade-in {
-      animation: fadeIn 3s ease-in-out;
+      animation: fadeIn 1.5s ease-in-out;
     }
     
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
+    }
+    
+    /* Style cho slot machine effect */
+    #slotMachine {
+      font-size: 60px;
+      margin: 30px auto;
+      display: none;
     }
   </style>
 </head>
@@ -70,17 +60,23 @@
     <button onclick="saveName()">Xác nhận Tên</button>
   </div>
 
-  <!-- Khu vực game: hiển thị tên người chơi và nút quay -->
+  <!-- Khu vực game: hiển thị tên người chơi và các nút tương tác -->
   <div id="gameArea" style="display:none;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
-    <button id="rollButton" onclick="watchAdAndRoll()">Quay Ngẫu Nhiên</button>
-    <!-- Phần hiệu ứng spinner -->
-    <div id="spinner" class="spinner"></div>
+    
+    <!-- Nút để mở quảng cáo -->
+    <button id="adButton" onclick="watchAd()">Xem Quảng Cáo</button>
+    <!-- Nút để quay: ban đầu ẩn, sẽ hiện sau khi xem quảng cáo xong -->
+    <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Quay</button>
+    
+    <!-- Container hiển thị hiệu ứng slot machine -->
+    <div id="slotMachine"></div>
+    
     <div id="status"></div>
   </div>
 
   <script>
-    // Lưu tên người chơi và chuyển sang khu vực quay số
+    // Lưu tên người chơi và chuyển sang giao diện game
     function saveName() {
       const name = document.getElementById("playerName").value.trim();
       if (!name) {
@@ -90,7 +86,7 @@
       localStorage.setItem("playerName", name);
       showGameSection();
     }
-
+    
     // Hiển thị khu vực game nếu đã có tên người chơi
     function showGameSection() {
       const name = localStorage.getItem("playerName");
@@ -100,34 +96,59 @@
         document.getElementById("displayName").innerText = name;
       }
     }
-
-    // Hàm thực hiện quá trình xem quảng cáo, hiển thị hiệu ứng, và quay số
-    function watchAdAndRoll() {
+    
+    // Mở quảng cáo; sau 7 giây, ẩn nút "Xem Quảng Cáo" và hiển thị nút "Bấm Để Quay"
+    function watchAd() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
-      // Mở quảng cáo (mỗi lần quay đều yêu cầu phải xem quảng cáo)
+      // Mở quảng cáo trong tab/window mới
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
       
-      const rollButton = document.getElementById("rollButton");
-      rollButton.disabled = true;
-      rollButton.innerText = "Đang xem quảng cáo...";
+      const adButton = document.getElementById("adButton");
+      adButton.disabled = true;
+      adButton.innerText = "Đang xem quảng cáo...";
       
-      // Hiển thị spinner để tăng cảm giác hồi hộp
-      document.getElementById("spinner").style.display = "block";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 7 giây...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 5 giây...";
       
-      // Sau 7 giây, sau khi quảng cáo "xem xong"
       setTimeout(() => {
-        // Ẩn spinner
-        document.getElementById("spinner").style.display = "none";
+        // Sau 5 giây, chuyển sang bước quay thưởng
+        document.getElementById("status").innerText = "";
+        adButton.style.display = "none";
+        document.getElementById("spinButton").style.display = "inline-block";
+      }, 5000);
+    }
+    
+    // Thực hiện hiệu ứng quay kiểu máy slot và xác định kết quả
+    function spinSlot() {
+      const playerName = localStorage.getItem("playerName");
+      if (!playerName) return;
+      
+      const spinButton = document.getElementById("spinButton");
+      spinButton.disabled = true;
+      spinButton.innerText = "Đang quay...";
+      
+      const slotMachine = document.getElementById("slotMachine");
+      slotMachine.style.display = "block";
+      
+      // Mảng các biểu tượng để tạo hiệu ứng quay
+      const symbols = ["🍒", "🍋", "🍊", "🍇", "🍉", "⭐", "🔔"];
+      
+      // Hiệu ứng quay: cập nhật biểu tượng mỗi 100ms
+      let spinInterval = setInterval(() => {
+        slotMachine.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      }, 100);
+      
+      // Sau 3 giây, dừng hiệu ứng quay và xác định kết quả
+      setTimeout(() => {
+        clearInterval(spinInterval);
         
         // Quay số với tỉ lệ trúng 1/20
-        const randomNumber = Math.floor(Math.random() * 20);
-        
-        if (randomNumber === 0) {
-          // THẮNG: Gửi thông tin qua webhook Discord
-          document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!";
+        const outcome = Math.floor(Math.random() * 20);
+        if (outcome === 0) {
+          // Nếu trúng thưởng: hiển thị biểu tượng chiến thắng và gửi thông điệp qua Discord Webhook
+          slotMachine.innerText = "💰";
+          document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!</span>";
           fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -136,23 +157,29 @@
             })
           })
           .then(() => {
-            document.getElementById("status").innerHTML += "";
+            // Có thể cập nhật trạng thái gửi thành công (nếu cần)
           })
           .catch(() => {
-            document.getElementById("status").innerHTML += "";
+            // Xử lý nếu gửi webhook thất bại
           });
         } else {
-          // THUA: Thông báo không trúng thưởng
+          // Nếu không trúng thưởng
+          slotMachine.innerText = "❌";
           document.getElementById("status").innerHTML = "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
         }
-
-        // Cho phép quay lại
-        rollButton.disabled = false;
-        rollButton.innerText = "Quay Ngẫu Nhiên Lại";
-      }, 7000);
+        
+        // Reset giao diện: ẩn nút quay và slot machine, hiển thị lại nút "Xem Quảng Cáo" để thực hiện vòng quay mới
+        spinButton.disabled = false;
+        spinButton.innerText = "Quay Lại";
+        spinButton.style.display = "none";
+        slotMachine.style.display = "none";
+        const adButton = document.getElementById("adButton");
+        adButton.style.display = "inline-block";
+        adButton.disabled = false;
+        adButton.innerText = "Xem Quảng Cáo";
+      }, 3000);
     }
-
-    // Kiểm tra nếu đã lưu tên trước đó để tự động hiện khu vực game
+    
     window.onload = function() {
       showGameSection();
     };
