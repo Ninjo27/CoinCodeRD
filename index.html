@@ -118,14 +118,14 @@
       const adButton = document.getElementById("adButton");
       adButton.disabled = true;
       adButton.innerText = "Đang xem quảng cáo...";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 7 giây...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 5 giây...";
       
       setTimeout(() => {
-        // Sau 7 giây chuyển sang bước quay
+        // Sau 5 giây chuyển sang bước quay
         document.getElementById("status").innerText = "";
         adButton.style.display = "none";
         document.getElementById("spinButton").style.display = "inline-block";
-      }, 7000);
+      }, 5000);
     }
     
     // Hàm thực hiện hiệu ứng quay của máy slot với 3 slot
@@ -155,7 +155,7 @@
         slot3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
       }, 100);
       
-      // Sau 3 giây dừng hiệu ứng quay và chọn kết quả cuối cùng
+      // Dừng hiệu ứng quay sau 3 giây và hiển thị kết quả cuối cùng
       setTimeout(() => {
         clearInterval(spinInterval);
         
@@ -168,12 +168,11 @@
         slot2.innerText = final2;
         slot3.innerText = final3;
         
-        // Kiểm tra nếu cả 3 slot trùng khớp
-        if (final1 === final2 && final2 === final3) {
-          // Nếu trúng thưởng, chờ 1 giây rồi thông báo
-          setTimeout(() => {
+        // Giữ kết quả của 3 slot hiển thị thêm 1 giây trước khi thông báo trạng thái thắng/thất bại
+        setTimeout(() => {
+          if (final1 === final2 && final2 === final3) {
+            // Nếu trúng thưởng, hiển thị thông báo thắng và gửi thông tin qua Discord Webhook
             document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!";
-            // Gửi thông tin qua Discord Webhook
             fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -181,22 +180,20 @@
                 content: `Người chơi **${playerName}** đã trúng thưởng`
               })
             });
-          }, 1000);
-        } else {
-          // Nếu không trùng, thông báo ngay
-          document.getElementById("status").innerHTML = "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
-        }
-        
-        // Reset giao diện: ẩn slot machine, hiển thị lại nút "Xem Quảng Cáo"
-        spinButton.disabled = false;
-        spinButton.innerText = "Quay Lại";
-        spinButton.style.display = "none";
-        slotMachine.style.display = "none";
-        
-        const adButton = document.getElementById("adButton");
-        adButton.style.display = "inline-block";
-        adButton.disabled = false;
-        adButton.innerText = "Xem Quảng Cáo";
+          } else {
+            // Nếu không trùng, thông báo ngay
+            document.getElementById("status").innerHTML = "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+          }
+          
+          // Reset giao diện: ẩn slot machine, hiển thị lại nút "Xem Quảng Cáo" để quay tiếp
+          spinButton.disabled = false;
+          spinButton.innerText = "Quay Lại";
+          spinButton.style.display = "none";
+          slotMachine.style.display = "none";
+          document.getElementById("adButton").style.display = "inline-block";
+          document.getElementById("adButton").disabled = false;
+          document.getElementById("adButton").innerText = "Xem Quảng Cáo";
+        }, 1000); // Delay 1 giây để hiển thị kết quả 3 biểu tượng
       }, 3000);
     }
     
