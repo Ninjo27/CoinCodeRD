@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Xem Quảng Cáo & Quay Thưởng</title>
+  <title>Xem Quảng Cáo & Mở Quà Thưởng</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,8 +31,7 @@
       font-size: 18px;
       color: #0033cc;
     }
-    
-    /* Hiệu ứng fade-in cho thông báo */
+    /* Fade-in effect */
     .fade-in {
       animation: fadeIn 1.5s ease-in-out;
     }
@@ -40,15 +39,28 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
-    /* Updated Gift Box styles */
+    
+    /* Gift Box styles */
     #giftBox {
       position: relative;
       width: 200px;
       height: 200px;
-      margin: 20px auto;
-      display: none; /* ẩn ban đầu */
+      margin: 70px auto 20px auto; /* Dời xuống một xíu để không che phía trên */
+      display: none;
     }
+    /* Shake effect */
+    #giftBox.shake {
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-5px, 0); }
+      40% { transform: translate(5px, 0); }
+      60% { transform: translate(-5px, 0); }
+      80% { transform: translate(5px, 0); }
+      100% { transform: translate(0, 0); }
+    }
+    /* Box (thân hộp) */
     #giftBox .box {
       position: absolute;
       bottom: 0;
@@ -59,6 +71,7 @@
       border-radius: 10px;
       box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
     }
+    /* Lid (nắp hộp) */
     #giftBox .lid {
       position: absolute;
       top: 0;
@@ -70,47 +83,25 @@
       border-bottom: none;
       border-radius: 10px 10px 0 0;
       transform-origin: top center;
-      transition: transform 0.8s ease-out;
     }
-    /* Khi mở nắp */
-    #giftBox .lid.open {
-      transform: rotateX(-160deg);
+    /* Explosion animation cho nắp hộp: nắp sẽ được "bắn" thẳng lên trời */
+    @keyframes explodeLid {
+      0% { transform: translateY(0) rotateX(0deg); opacity: 1; }
+      50% { transform: translateY(-80px) rotateX(-20deg); opacity: 1; }
+      100% { transform: translateY(-300px) rotateX(-45deg); opacity: 0; }
     }
-    /* Updated Slash effect: hiệu ứng ánh sáng chạy mạnh */
-    #giftBox.shine::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -150%;
-      width: 300%;
-      height: 100%;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,0.9), transparent);
-      transform: skewX(-30deg);
-      animation: slash 0.8s ease-in-out forwards;
-    }
-    @keyframes slash {
-      0% {
-        left: -150%;
-        opacity: 0;
-      }
-      50% {
-        left: 50%;
-        opacity: 1;
-      }
-      100% {
-        left: 150%;
-        opacity: 0;
-      }
+    .lid.explode {
+      animation: explodeLid 0.8s forwards;
     }
     
-    /* Hiển thị kết quả (Tick hoặc X) */
+    /* Kết quả hiển thị (Tick hoặc X) */
     #resultIcon {
       font-size: 60px;
       margin-top: 10px;
       height: 70px;
     }
     
-    /* Style cho phần lựa chọn mức độ */
+    /* Phần lựa chọn mức độ */
     #levelSelection {
       margin-top: 20px;
       text-align: center;
@@ -148,20 +139,20 @@
   </style>
 </head>
 <body>
-  <h1>🎁 Xem Quảng Cáo và Quay Thưởng 🎁</h1>
+  <h1>🎁 Xem Quảng Cáo và Mở Quà Thưởng 🎁</h1>
   
-  <!-- Khu vực nhập tên ban đầu -->
+  <!-- Nhập tên -->
   <div id="inputArea">
     <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
     <br>
     <button onclick="saveName()">Xác nhận Tên</button>
   </div>
   
-  <!-- Khu vực game: hiển thị tên, lựa chọn mức độ và các nút tương tác -->
+  <!-- Giao diện chính -->
   <div id="gameArea" style="display:none;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
     
-    <!-- Phần lựa chọn mức độ -->
+    <!-- Lựa chọn mức độ -->
     <div id="levelSelection">
       <p>Chọn Mức Độ:</p>
       <div class="levels">
@@ -187,13 +178,13 @@
     <!-- Nút mở quà -->
     <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Mở Quà</button>
     
-    <!-- Container hiển thị hộp quà -->
+    <!-- Container hộp quà -->
     <div id="giftBox">
       <div class="lid"></div>
       <div class="box"></div>
     </div>
     
-    <!-- Kết quả (Tick hoặc X) -->
+    <!-- Kết quả -->
     <div id="resultIcon"></div>
     <div id="status"></div>
   </div>
@@ -271,27 +262,30 @@
       spinButton.disabled = true;
       spinButton.innerText = "Đang mở quà...";
       
-      // Hiển thị hộp quà và reset trạng thái
       const giftBox = document.getElementById("giftBox");
       giftBox.style.display = "block";
+      
+      // Bắt đầu hiệu ứng: cho hộp quà rung nhẹ
+      giftBox.classList.add("shake");
+      
       const lid = document.querySelector("#giftBox .lid");
-      lid.classList.remove("open");
+      lid.classList.remove("explode"); // Xóa hiệu ứng nắp đã có (nếu có)
+      
+      // Ẩn kết quả cũ, thông báo cũ
       document.getElementById("resultIcon").innerHTML = "";
       document.getElementById("status").innerHTML = "";
       
-      // Sau 500ms, mở nắp hộp (thêm lớp open)
+      // Sau 600ms, dừng hiệu ứng rung và kích hoạt nắp "nổ" ra (bắn lên trời)
       setTimeout(() => {
-        lid.classList.add("open");
-      }, 500);
+        giftBox.classList.remove("shake");
+        lid.classList.add("explode");
+      }, 600);
       
-      // Sau 1200ms, kích hoạt hiệu ứng slash (chóe ánh sáng)
+      // Sau khoảng 2000ms (sau khi nắp bay lên), quyết định kết quả
       setTimeout(() => {
-        giftBox.classList.add("shine");
-      }, 1200);
-      
-      // Sau 2500ms, quyết định kết quả và hiển thị icon kết quả
-      setTimeout(() => {
-        giftBox.classList.remove("shine");
+        // Loại bỏ lớp explosion (để reset cho vòng sau)
+        lid.classList.remove("explode");
+        
         let win = (Math.random() < selectedProbability);
         const resultIcon = document.getElementById("resultIcon");
         if (win) {
@@ -311,18 +305,19 @@
             "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
         }
         
-        // Sau 1.5 giây, reset giao diện
+        // Sau 1500ms, reset lại giao diện
         setTimeout(() => {
           spinButton.disabled = false;
           spinButton.innerText = "Mở Quà Lại";
           spinButton.style.display = "none";
           giftBox.style.display = "none";
-          lid.classList.remove("open");
+          // Reset lại lớp của nắp hộp
+          lid.classList.remove("explode");
           document.getElementById("adButton").style.display = "inline-block";
           document.getElementById("adButton").disabled = false;
           document.getElementById("adButton").innerText = "Xem Quảng Cáo";
         }, 1500);
-      }, 2500);
+      }, 2000);
     }
     
     window.onload = function() {
@@ -331,3 +326,4 @@
   </script>
 </body>
 </html>
+
