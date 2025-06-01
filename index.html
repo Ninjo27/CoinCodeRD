@@ -41,11 +41,11 @@
       to { opacity: 1; }
     }
 
-    /* Styles cho hộp quà */
+    /* Updated Gift Box styles */
     #giftBox {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 200px;
+      height: 200px;
       margin: 20px auto;
       display: none; /* ẩn ban đầu */
     }
@@ -53,10 +53,11 @@
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 70%;
-      background: #fdd835;
-      border: 2px solid #ccc;
-      border-radius: 5px;
+      height: 60%;
+      background: linear-gradient(145deg, #ffeb3b, #fdd835);
+      border: 2px solid #e0a800;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
     }
     #giftBox .lid {
       position: absolute;
@@ -64,34 +65,45 @@
       left: 0;
       width: 100%;
       height: 40%;
-      background: #ff9800;
-      border: 2px solid #ccc;
+      background: linear-gradient(145deg, #ff9800, #f57c00);
+      border: 2px solid #e65100;
       border-bottom: none;
-      border-radius: 5px 5px 0 0;
+      border-radius: 10px 10px 0 0;
       transform-origin: top center;
-      transition: transform 1s ease;
+      transition: transform 0.8s ease-out;
     }
     /* Khi mở nắp */
     #giftBox .lid.open {
-      transform: rotateX(-150deg);
+      transform: rotateX(-160deg);
     }
-    /* Hiệu ứng chóe sáng */
+    /* Updated Slash effect: hiệu ứng ánh sáng chạy mạnh */
     #giftBox.shine::after {
       content: "";
       position: absolute;
-      top: -20px;
-      left: -20px;
-      width: 190px;
-      height: 190px;
-      background: radial-gradient(circle, rgba(255,255,255,0.7) 10%, transparent 70%);
-      animation: shine 1s linear;
+      top: 0;
+      left: -150%;
+      width: 300%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.9), transparent);
+      transform: skewX(-30deg);
+      animation: slash 0.8s ease-in-out forwards;
     }
-    @keyframes shine {
-      0% { opacity: 0; transform: scale(0.5); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0; transform: scale(0.5); }
+    @keyframes slash {
+      0% {
+        left: -150%;
+        opacity: 0;
+      }
+      50% {
+        left: 50%;
+        opacity: 1;
+      }
+      100% {
+        left: 150%;
+        opacity: 0;
+      }
     }
-    /* Hiển thị kết quả */
+    
+    /* Hiển thị kết quả (Tick hoặc X) */
     #resultIcon {
       font-size: 60px;
       margin-top: 10px;
@@ -239,7 +251,6 @@
     function watchAd() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
-      // Mở trang quảng cáo
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
       const adButton = document.getElementById("adButton");
       adButton.disabled = true;
@@ -260,29 +271,26 @@
       spinButton.disabled = true;
       spinButton.innerText = "Đang mở quà...";
       
-      // Hiển thị hộp quà
+      // Hiển thị hộp quà và reset trạng thái
       const giftBox = document.getElementById("giftBox");
       giftBox.style.display = "block";
       const lid = document.querySelector("#giftBox .lid");
-      // Xóa lớp mở nắp (nếu đã tồn tại)
       lid.classList.remove("open");
-      // Ẩn kết quả cũ (nếu có)
       document.getElementById("resultIcon").innerHTML = "";
       document.getElementById("status").innerHTML = "";
       
-      // Sau 500ms, mở nắp hộp
+      // Sau 500ms, mở nắp hộp (thêm lớp open)
       setTimeout(() => {
         lid.classList.add("open");
       }, 500);
       
-      // Sau 1200ms, thêm hiệu ứng chóe ánh sáng vào hộp
+      // Sau 1200ms, kích hoạt hiệu ứng slash (chóe ánh sáng)
       setTimeout(() => {
         giftBox.classList.add("shine");
       }, 1200);
       
       // Sau 2500ms, quyết định kết quả và hiển thị icon kết quả
       setTimeout(() => {
-        // Xóa hiệu ứng sáng
         giftBox.classList.remove("shine");
         let win = (Math.random() < selectedProbability);
         const resultIcon = document.getElementById("resultIcon");
@@ -303,7 +311,7 @@
             "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
         }
         
-        // Sau 1.5 giây, reset giao diện quay
+        // Sau 1.5 giây, reset giao diện
         setTimeout(() => {
           spinButton.disabled = false;
           spinButton.innerText = "Mở Quà Lại";
