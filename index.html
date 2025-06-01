@@ -115,9 +115,9 @@
       
       // Hiển thị spinner để tăng cảm giác hồi hộp
       document.getElementById("spinner").style.display = "block";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 15 giây...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 7 giây...";
       
-      // Sau 15 giây, sau khi quảng cáo "xem xong"
+      // Sau 7 giây, sau khi quảng cáo "xem xong"
       setTimeout(() => {
         // Ẩn spinner
         document.getElementById("spinner").style.display = "none";
@@ -149,7 +149,7 @@
         // Cho phép quay lại
         rollButton.disabled = false;
         rollButton.innerText = "Quay Ngẫu Nhiên Lại";
-      }, 15000);
+      }, 7000);
     }
 
     // Kiểm tra nếu đã lưu tên trước đó để tự động hiện khu vực game
