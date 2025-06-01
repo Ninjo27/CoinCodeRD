@@ -40,18 +40,62 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
-    /* Style cho slot machine với 3 slot */
-    #slotMachine {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 30px auto;
-      display: none;
+
+    /* Styles cho hộp quà */
+    #giftBox {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      display: none; /* ẩn ban đầu */
     }
-    .slot {
+    #giftBox .box {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 70%;
+      background: #fdd835;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+    #giftBox .lid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      background: #ff9800;
+      border: 2px solid #ccc;
+      border-bottom: none;
+      border-radius: 5px 5px 0 0;
+      transform-origin: top center;
+      transition: transform 1s ease;
+    }
+    /* Khi mở nắp */
+    #giftBox .lid.open {
+      transform: rotateX(-150deg);
+    }
+    /* Hiệu ứng chóe sáng */
+    #giftBox.shine::after {
+      content: "";
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      width: 190px;
+      height: 190px;
+      background: radial-gradient(circle, rgba(255,255,255,0.7) 10%, transparent 70%);
+      animation: shine 1s linear;
+    }
+    @keyframes shine {
+      0% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0; transform: scale(0.5); }
+    }
+    /* Hiển thị kết quả */
+    #resultIcon {
       font-size: 60px;
-      margin: 0 10px;
+      margin-top: 10px;
+      height: 70px;
     }
     
     /* Style cho phần lựa chọn mức độ */
@@ -93,60 +137,59 @@
 </head>
 <body>
   <h1>🎁 Xem Quảng Cáo và Quay Thưởng 🎁</h1>
-
+  
   <!-- Khu vực nhập tên ban đầu -->
   <div id="inputArea">
     <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
     <br>
     <button onclick="saveName()">Xác nhận Tên</button>
   </div>
-
-  <!-- Khu vực game: hiển thị tên, lựa chọn mức độ, và các nút tương tác -->
+  
+  <!-- Khu vực game: hiển thị tên, lựa chọn mức độ và các nút tương tác -->
   <div id="gameArea" style="display:none;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
     
-    <!-- Phần Lựa chọn Mức Độ -->
+    <!-- Phần lựa chọn mức độ -->
     <div id="levelSelection">
       <p>Chọn Mức Độ:</p>
       <div class="levels">
         <label class="levelOption">
           <input type="radio" name="level" value="thuong">
-          <span>Thường (2%)</span>
+          <span>Thường (10%)</span>
         </label>
         <label class="levelOption">
           <input type="radio" name="level" value="hien">
-          <span>Hiếm (1%)</span>
+          <span>Hiếm (5%)</span>
         </label>
         <label class="levelOption">
           <input type="radio" name="level" value="sieuhien">
-          <span>Siêu hiếm (0.5%)</span>
+          <span>Siêu hiếm (1%)</span>
         </label>
       </div>
       <button onclick="confirmLevel()">Xác nhận Mức độ</button>
     </div>
-
-    <!-- Nút để mở quảng cáo (sẽ hiện khi chọn mức độ) -->
+    
+    <!-- Nút xem quảng cáo -->
     <button id="adButton" onclick="watchAd()" style="display:none;">Xem Quảng Cáo</button>
     
-    <!-- Nút để quay: xuất hiện sau khi xem quảng cáo xong -->
-    <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Quay</button>
+    <!-- Nút mở quà -->
+    <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Mở Quà</button>
     
-    <!-- Container hiển thị máy slot với 3 slot -->
-    <div id="slotMachine">
-      <span class="slot" id="slot1"></span>
-      <span class="slot" id="slot2"></span>
-      <span class="slot" id="slot3"></span>
+    <!-- Container hiển thị hộp quà -->
+    <div id="giftBox">
+      <div class="lid"></div>
+      <div class="box"></div>
     </div>
     
+    <!-- Kết quả (Tick hoặc X) -->
+    <div id="resultIcon"></div>
     <div id="status"></div>
   </div>
-
+  
   <script>
-    // Biến toàn cục lưu mức độ đã chọn (xác suất thắng và tên mức độ)
     let selectedProbability = 0;
     let selectedLevelName = "";
-
-    // Lưu tên người chơi và chuyển sang giao diện game
+    
     function saveName() {
       const name = document.getElementById("playerName").value.trim();
       if (!name) {
@@ -157,7 +200,6 @@
       showGameSection();
     }
     
-    // Hiển thị khu vực game nếu đã lưu tên
     function showGameSection() {
       const name = localStorage.getItem("playerName");
       if (name) {
@@ -167,7 +209,6 @@
       }
     }
     
-    // Hàm xác nhận mức độ dựa trên lựa chọn của người chơi
     function confirmLevel() {
       const radios = document.getElementsByName("level");
       let levelChosen = null;
@@ -182,121 +223,98 @@
         return;
       }
       if (levelChosen === "thuong") {
-        selectedProbability = 0.02; // 2%
-        selectedLevelName = "Thường (2%)";
+        selectedProbability = 0.10;
+        selectedLevelName = "Thường (10%)";
       } else if (levelChosen === "hien") {
-        selectedProbability = 0.01; // 1%
-        selectedLevelName = "Hiếm (1%)";
+        selectedProbability = 0.05;
+        selectedLevelName = "Hiếm (5%)";
       } else if (levelChosen === "sieuhien") {
-        selectedProbability = 0.005; // 0.5%
-        selectedLevelName = "Siêu hiếm (0.5%)";
+        selectedProbability = 0.01;
+        selectedLevelName = "Siêu hiếm (1%)";
       }
-      
-      // Ẩn phần lựa chọn mức độ và hiển thị nút xem quảng cáo
       document.getElementById("levelSelection").style.display = "none";
       document.getElementById("adButton").style.display = "inline-block";
     }
     
-    // Hàm mở quảng cáo; sau 3 giây sẽ ẩn nút "Xem Quảng Cáo" và hiện nút "Bấm Để Quay"
     function watchAd() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
-      
-      // Mở quảng cáo trong tab mới
+      // Mở trang quảng cáo
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
-      
       const adButton = document.getElementById("adButton");
       adButton.disabled = true;
       adButton.innerText = "Đang xem quảng cáo...";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 3 giây...";
-      
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 5 giây...";
       setTimeout(() => {
         document.getElementById("status").innerText = "";
         adButton.style.display = "none";
         document.getElementById("spinButton").style.display = "inline-block";
-      }, 3000);
+      }, 5000);
     }
     
-    // Hàm thực hiện hiệu ứng quay cho máy slot với 3 slot
     function spinSlot() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
       const spinButton = document.getElementById("spinButton");
       spinButton.disabled = true;
-      spinButton.innerText = "Đang quay...";
+      spinButton.innerText = "Đang mở quà...";
       
-      const slotMachine = document.getElementById("slotMachine");
-      slotMachine.style.display = "flex";
+      // Hiển thị hộp quà
+      const giftBox = document.getElementById("giftBox");
+      giftBox.style.display = "block";
+      const lid = document.querySelector("#giftBox .lid");
+      // Xóa lớp mở nắp (nếu đã tồn tại)
+      lid.classList.remove("open");
+      // Ẩn kết quả cũ (nếu có)
+      document.getElementById("resultIcon").innerHTML = "";
+      document.getElementById("status").innerHTML = "";
       
-      // Mảng các biểu tượng của slot (7 biểu tượng)
-      const symbols = ["🍒", "🍋", "🍊", "🍇", "🍉", "⭐", "🔔"];
-      
-      // Lấy các slot riêng lẻ
-      const slot1 = document.getElementById("slot1");
-      const slot2 = document.getElementById("slot2");
-      const slot3 = document.getElementById("slot3");
-      
-      // Hiệu ứng quay: cập nhật 3 slot mỗi 100ms trong 3 giây
-      let spinInterval = setInterval(() => {
-        slot1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        slot2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        slot3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-      }, 100);
-      
-      // Sau 3 giây, dừng hiệu ứng quay và hiển thị kết quả ban đầu
+      // Sau 500ms, mở nắp hộp
       setTimeout(() => {
-        clearInterval(spinInterval);
-        // Hiển thị kết quả ban đầu ngẫu nhiên
-        let final1 = symbols[Math.floor(Math.random() * symbols.length)];
-        let final2 = symbols[Math.floor(Math.random() * symbols.length)];
-        let final3 = symbols[Math.floor(Math.random() * symbols.length)];
-        slot1.innerText = final1;
-        slot2.innerText = final2;
-        slot3.innerText = final3;
+        lid.classList.add("open");
+      }, 500);
+      
+      // Sau 1200ms, thêm hiệu ứng chóe ánh sáng vào hộp
+      setTimeout(() => {
+        giftBox.classList.add("shine");
+      }, 1200);
+      
+      // Sau 2500ms, quyết định kết quả và hiển thị icon kết quả
+      setTimeout(() => {
+        // Xóa hiệu ứng sáng
+        giftBox.classList.remove("shine");
+        let win = (Math.random() < selectedProbability);
+        const resultIcon = document.getElementById("resultIcon");
+        if (win) {
+          resultIcon.innerHTML = "<span class='fade-in'>✔️</span>";
+          document.getElementById("status").innerHTML =
+            "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
+          fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
+            })
+          });
+        } else {
+          resultIcon.innerHTML = "<span class='fade-in'>❌</span>";
+          document.getElementById("status").innerHTML =
+            "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+        }
         
-        // Giữ kết quả hiển thị thêm 1 giây trước khi quyết định kết quả cuối cùng
-setTimeout(() => {
-  let win = (Math.random() < selectedProbability);
-  if (win) {
-    // Chọn 1 biểu tượng duy nhất và ép cho cả 3 slot
-    let winningSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-    slot1.innerText = winningSymbol;
-    slot2.innerText = winningSymbol;
-    slot3.innerText = winningSymbol;
-    document.getElementById("status").innerHTML =
-      "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
-    fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
-      })
-    });
-  } else {
-    // THUA: đảm bảo rằng 3 biểu tượng luôn khác nhau
-    let sym1, sym2, sym3;
-    do {
-      sym1 = symbols[Math.floor(Math.random() * symbols.length)];
-      sym2 = symbols[Math.floor(Math.random() * symbols.length)];
-      sym3 = symbols[Math.floor(Math.random() * symbols.length)];
-    } while (sym1 === sym2 || sym1 === sym3 || sym2 === sym3);
-    slot1.innerText = sym1;
-    slot2.innerText = sym2;
-    slot3.innerText = sym3;
-    document.getElementById("status").innerHTML =
-      "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
-  }
-  // Reset giao diện (ẩn slot machine, chuyển nút quay về nút xem quảng cáo)
-  spinButton.disabled = false;
-  spinButton.innerText = "Quay Lại";
-  spinButton.style.display = "none";
-  slotMachine.style.display = "none";
-  document.getElementById("adButton").style.display = "inline-block";
-  document.getElementById("adButton").disabled = false;
-  document.getElementById("adButton").innerText = "Xem Quảng Cáo";
-}, 1000);
-      }, 3000);
+        // Sau 1.5 giây, reset giao diện quay
+        setTimeout(() => {
+          spinButton.disabled = false;
+          spinButton.innerText = "Mở Quà Lại";
+          spinButton.style.display = "none";
+          giftBox.style.display = "none";
+          lid.classList.remove("open");
+          document.getElementById("adButton").style.display = "inline-block";
+          document.getElementById("adButton").disabled = false;
+          document.getElementById("adButton").innerText = "Xem Quảng Cáo";
+        }, 1500);
+      }, 2500);
     }
     
     window.onload = function() {
