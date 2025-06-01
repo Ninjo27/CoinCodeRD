@@ -216,34 +216,30 @@
       }, 100);
       
       // Sau 3 giây, dừng hiệu ứng quay và hiển thị kết quả ban đầu
-      setTimeout(() => {
-        clearInterval(spinInterval);
-        
-        // Lấy kết quả ban đầu ngẫu nhiên (sẽ bị thay đổi lại sau 1 giây theo điều kiện thắng/thua)
-        let final1 = symbols[Math.floor(Math.random() * symbols.length)];
-        let final2 = symbols[Math.floor(Math.random() * symbols.length)];
-        let final3 = symbols[Math.floor(Math.random() * symbols.length)];
-        
-        slot1.innerText = final1;
-        slot2.innerText = final2;
-        slot3.innerText = final3;
-        
-        // Giữ kết quả hiển thị thêm 1 giây trước khi quyết định kết quả cuối cùng
-setTimeout(() => {
-  let randomValue = Math.random();
-  if (randomValue < selectedProbability) {
+    setTimeout(() => {
+  // Xác định thắng dựa theo mức đã chọn:
+  let win = false;
+  if (selectedLevelName === "Thường (20%)") {
+    win = (Math.floor(Math.random() * 5) === 0); // 1/5 ~ 20%
+  } else if (selectedLevelName === "Hiếm (5%)") {
+    win = (Math.floor(Math.random() * 20) === 0); // 1/20 ~ 5%
+  } else if (selectedLevelName === "Siêu hiếm (1%)") {
+    win = (Math.floor(Math.random() * 100) === 0); // 1/100 ~ 1%
+  }
+  
+  if (win) {
     // THẮNG: ép 3 slot hiển thị cùng một biểu tượng
     let winningSymbol = symbols[Math.floor(Math.random() * symbols.length)];
     slot1.innerText = winningSymbol;
     slot2.innerText = winningSymbol;
     slot3.innerText = winningSymbol;
     document.getElementById("status").innerHTML =
-      "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!";
+      "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "";
     fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `Người chơi **${playerName}** đã trúng thưởng mức **${selectedLevelName}**`
+        content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
       })
     });
   } else {
@@ -261,7 +257,7 @@ setTimeout(() => {
     slot2.innerText = symbols[idx2];
     slot3.innerText = symbols[idx3];
     document.getElementById("status").innerHTML =
-      "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+      "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!<";
   }
   
   // Reset giao diện
