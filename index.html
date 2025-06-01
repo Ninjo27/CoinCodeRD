@@ -127,7 +127,7 @@
         
         if (randomNumber === 0) {
           // THẮNG: Gửi thông tin qua webhook Discord
-          document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!</span>";
+          document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!";
           fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -136,10 +136,10 @@
             })
           })
           .then(() => {
-            document.getElementById("status").innerHTML += " (Thông tin đã được gửi qua Discord.)";
+            document.getElementById("status").innerHTML += "";
           })
           .catch(() => {
-            document.getElementById("status").innerHTML += " (Gửi qua Discord thất bại.)";
+            document.getElementById("status").innerHTML += "";
           });
         } else {
           // THUA: Thông báo không trúng thưởng
