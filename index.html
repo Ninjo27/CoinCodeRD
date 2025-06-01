@@ -229,43 +229,44 @@
         slot3.innerText = final3;
         
         // Giữ kết quả hiển thị thêm 1 giây trước khi quyết định kết quả cuối cùng
-        setTimeout(() => {
-          let randomValue = Math.random();
-          if (randomValue < selectedProbability) {
-            // THẮNG: ép hiển thị 3 biểu tượng giống nhau
-            let winningSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-            slot1.innerText = winningSymbol;
-            slot2.innerText = winningSymbol;
-            slot3.innerText = winningSymbol;
-            document.getElementById("status").innerHTML = 
-              "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "";
-            // Gửi thông tin qua Discord Webhook
-            fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
-              })
-            });
-          } else {
-            // THUA: đảm bảo 3 biểu tượng khác nhau bằng cách trộn mảng và lấy 3 phần tử đầu tiên
-            let shuffledSymbols = symbols.slice().sort(() => Math.random() - 0.5);
-            slot1.innerText = shuffledSymbols[0];
-            slot2.innerText = shuffledSymbols[1];
-            slot3.innerText = shuffledSymbols[2];
-            document.getElementById("status").innerHTML = 
-              "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
-          }
-          
-          // Reset giao diện: ẩn slot machine, nút quay tái hiện lại nút "Xem Quảng Cáo" để bắt đầu vòng quay mới
-          spinButton.disabled = false;
-          spinButton.innerText = "Quay Lại";
-          spinButton.style.display = "none";
-          slotMachine.style.display = "none";
-          document.getElementById("adButton").style.display = "inline-block";
-          document.getElementById("adButton").disabled = false;
-          document.getElementById("adButton").innerText = "Xem Quảng Cáo";
-        }, 1000);
+setTimeout(() => {
+  let randomValue = Math.random();
+  if (randomValue < selectedProbability) {
+    // THẮNG: ép hiển thị 3 biểu tượng giống nhau
+    let winningSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+    slot1.innerText = winningSymbol;
+    slot2.innerText = winningSymbol;
+    slot3.innerText = winningSymbol;
+    document.getElementById("status").innerHTML = 
+      "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
+    // Gửi thông tin qua Discord Webhook (nếu cần)
+    fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
+      })
+    });
+  } else {
+    // THUA: đảm bảo rằng 3 biểu tượng luôn khác nhau
+    // Tạo một mảng sao chép của symbols, trộn ngẫu nhiên và lấy 3 giá trị đầu tiên
+    let shuffledSymbols = symbols.slice().sort(() => Math.random() - 0.5);
+    slot1.innerText = shuffledSymbols[0];
+    slot2.innerText = shuffledSymbols[1];
+    slot3.innerText = shuffledSymbols[2];
+    document.getElementById("status").innerHTML = 
+      "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+  }
+  
+  // Reset giao diện
+  spinButton.disabled = false;
+  spinButton.innerText = "Quay Lại";
+  spinButton.style.display = "none";
+  slotMachine.style.display = "none";
+  document.getElementById("adButton").style.display = "inline-block";
+  document.getElementById("adButton").disabled = false;
+  document.getElementById("adButton").innerText = "Xem Quảng Cáo";
+}, 1000);
       }, 3000);
     }
     
