@@ -197,7 +197,7 @@
       document.getElementById("adButton").style.display = "inline-block";
     }
     
-    // Hàm mở quảng cáo; sau 5 giây sẽ ẩn nút "Xem Quảng Cáo" và hiện nút "Bấm Để Quay"
+    // Hàm mở quảng cáo; sau 3 giây sẽ ẩn nút "Xem Quảng Cáo" và hiện nút "Bấm Để Quay"
     function watchAd() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
@@ -208,13 +208,13 @@
       const adButton = document.getElementById("adButton");
       adButton.disabled = true;
       adButton.innerText = "Đang xem quảng cáo...";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 5 giây...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 3 giây...";
       
       setTimeout(() => {
         document.getElementById("status").innerText = "";
         adButton.style.display = "none";
         document.getElementById("spinButton").style.display = "inline-block";
-      }, 5000);
+      }, 3000);
     }
     
     // Hàm thực hiện hiệu ứng quay cho máy slot với 3 slot
