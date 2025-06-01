@@ -31,6 +31,33 @@
       font-size: 18px;
       color: #0033cc;
     }
+    
+    /* Hiệu ứng Spinner */
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 2s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Hiệu ứng fade-in cho thông báo */
+    .fade-in {
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -43,10 +70,12 @@
     <button onclick="saveName()">Xác nhận Tên</button>
   </div>
 
-  <!-- Khu vực game: hiển thị tên và nút quay -->
+  <!-- Khu vực game: hiển thị tên người chơi và nút quay -->
   <div id="gameArea" style="display:none;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
     <button id="rollButton" onclick="watchAdAndRoll()">Quay Ngẫu Nhiên</button>
+    <!-- Phần hiệu ứng spinner -->
+    <div id="spinner" class="spinner"></div>
     <div id="status"></div>
   </div>
 
@@ -72,28 +101,33 @@
       }
     }
 
-    // Hàm thực hiện quá trình xem quảng cáo và quay số
+    // Hàm thực hiện quá trình xem quảng cáo, hiển thị hiệu ứng, và quay số
     function watchAdAndRoll() {
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
-      // Mở quảng cáo (mỗi lần quay yêu cầu phải xem quảng cáo)
+      // Mở quảng cáo (mỗi lần quay đều yêu cầu phải xem quảng cáo)
       window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
       
       const rollButton = document.getElementById("rollButton");
       rollButton.disabled = true;
       rollButton.innerText = "Đang xem quảng cáo...";
       
+      // Hiển thị spinner để tăng cảm giác hồi hộp
+      document.getElementById("spinner").style.display = "block";
       document.getElementById("status").innerText = "⏳ Vui lòng chờ 15 giây...";
-
-      // Sau 15 giây, sau khi quảng cáo "xem xong"...
+      
+      // Sau 15 giây, sau khi quảng cáo "xem xong"
       setTimeout(() => {
-        // Thực hiện quay số với tỉ lệ trúng 1/20
+        // Ẩn spinner
+        document.getElementById("spinner").style.display = "none";
+        
+        // Quay số với tỉ lệ trúng 1/20
         const randomNumber = Math.floor(Math.random() * 20);
         
         if (randomNumber === 0) {
           // THẮNG: Gửi thông tin qua webhook Discord
-          document.getElementById("status").innerText = "✅ Chúc mừng, bạn đã trúng thưởng!";
+          document.getElementById("status").innerHTML = "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng!</span>";
           fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -102,14 +136,14 @@
             })
           })
           .then(() => {
-            document.getElementById("status").innerText += " (Thông tin đã được gửi qua Discord.)";
+            document.getElementById("status").innerHTML += " (Thông tin đã được gửi qua Discord.)";
           })
           .catch(() => {
-            document.getElementById("status").innerText += " (Gửi qua Discord thất bại.)";
+            document.getElementById("status").innerHTML += " (Gửi qua Discord thất bại.)";
           });
         } else {
           // THUA: Thông báo không trúng thưởng
-          document.getElementById("status").innerText = "❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!";
+          document.getElementById("status").innerHTML = "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
         }
 
         // Cho phép quay lại
