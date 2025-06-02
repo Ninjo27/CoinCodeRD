@@ -252,7 +252,6 @@
     <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
     <br>
     <button onclick="saveName()">Xác nhận Tên</button>
-    <button onclick="editName()">Đổi Tên</button>
   </div>
   
   <!-- Giao diện chính -->
@@ -376,19 +375,21 @@ const name = ""; // Luôn yêu cầu nhập lại tên mỗi lần tải trang
     let selectedProbability = 0;
     let selectedLevelName = "";
     
-    function saveName() {
-      const name = document.getElementById("playerName").value.trim();
-      if (!name) {
-        alert("❗ Vui lòng nhập tên Minecraft.");
-        return;
-      }
-      showGameSection();
+   function saveName() {
+    const name = document.getElementById("playerName").value.trim();
+    if (!name) {
+      alert("❗ Vui lòng nhập tên.");
+      return;
     }
-    
+
+    document.getElementById("displayName").innerText = name;
+    document.getElementById("inputArea").style.display = "none";
+    document.getElementById("gameArea").style.display = "block";
+  }
+
   function showGameSection() {
-    document.getElementById("inputArea").style.display = "block"; // Luôn hiển thị ô nhập tên
-    document.getElementById("gameArea").style.display = "none"; // Ẩn phần quay thưởng cho đến khi nhập tên
-    document.getElementById("playerInfo").style.display = "none"; // Ẩn phần hiển thị tên
+    document.getElementById("inputArea").style.display = "block";
+    document.getElementById("gameArea").style.display = "none";
   }
 
   window.onload = function() {
