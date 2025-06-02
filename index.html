@@ -200,27 +200,48 @@
       font-size: 18px;
       display: block;
     }
-  /* Banner bên trái */
-  #ad-left {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 160px;
-    height: 600px;
-    z-index: 999;
-  }
+/* Banner bên trái */
+    #ad-left {
+      position: fixed;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 160px;
+      height: 600px;
+      z-index: 999;
+    }
 
-  /* Banner bên phải */
-  #ad-right {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 160px;
-    height: 600px;
-    z-index: 999;
-  }
+    /* Banner bên phải */
+    #ad-right {
+      position: fixed;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 160px;
+      height: 600px;
+      z-index: 999;
+    }
+
+    /* Banner ngang dưới cùng */
+    #ad-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 728px;
+      height: 90px;
+      z-index: 999;
+    }
+
+    /* Khung viền ngăn cách quảng cáo và phần quay thưởng */
+    #gameArea {
+      border: 3px solid #ccc;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      background: white;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    }
 
   </style>
 </head>
@@ -276,43 +297,50 @@
     <!-- Container hiệu ứng (fireworks, smoke, confetti) -->
     <div id="effectContainer"></div>
   </div>
-  <!-- Banner quảng cáo Adsterra -->
-<div id="adsterra-banner">
-  <script type="text/javascript">
-    atOptions = {
-      'key' : '24678cb83d718b9c45010aa631c7d6ea',
-      'format' : 'iframe',
-      'height' : 90,
-      'width' : 728,
-      'params' : {}
-    };
-<!-- Banner dọc bên trái -->
-<div id="ad-left">
-  <script type="text/javascript">
-    atOptions = {
-      'key' : '42d82f707dee88f542b3f6ebce7ea59b',
-      'format' : 'iframe',
-      'height' : 600,
-      'width' : 160,
-      'params' : {}
-    };
-  </script>
-  <script type="text/javascript" src="//favourableafter.com/42d82f707dee88f542b3f6ebce7ea59b/invoke.js"></script>
-</div>
 
-<!-- Banner dọc bên phải -->
-<div id="ad-right">
-  <script type="text/javascript">
-    atOptions = {
-      'key' : '42d82f707dee88f542b3f6ebce7ea59b',
-      'format' : 'iframe',
-      'height' : 600,
-      'width' : 160,
-      'params' : {}
-    };
-  </script>
-  <script type="text/javascript" src="//favourableafter.com/42d82f707dee88f542b3f6ebce7ea59b/invoke.js"></script>
-</div>
+
+  <!-- Banner dọc bên trái -->
+  <div id="ad-left">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '42d82f707dee88f542b3f6ebce7ea59b',
+        'format' : 'iframe',
+        'height' : 600,
+        'width' : 160,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//favourableafter.com/42d82f707dee88f542b3f6ebce7ea59b/invoke.js"></script>
+  </div>
+
+  <!-- Banner dọc bên phải -->
+  <div id="ad-right">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '42d82f707dee88f542b3f6ebce7ea59b',
+        'format' : 'iframe',
+        'height' : 600,
+        'width' : 160,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//favourableafter.com/42d82f707dee88f542b3f6ebce7ea59b/invoke.js"></script>
+  </div>
+
+
+  <!-- Banner ngang dưới cùng -->
+  <div id="ad-bottom">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '24678cb83d718b9c45010aa631c7d6ea',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script type="text/javascript" src="//favourableafter.com/24678cb83d718b9c45010aa631c7d6ea/invoke.js"></script>
+  </div>
 
 
   </script>
