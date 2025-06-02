@@ -9,22 +9,27 @@
         text-align: center;
         margin: 0;
         padding: 0;
+        background: #f0f0f0;
       }
+      
       /* Phần nhập tên */
       #inputArea {
         margin-top: 50px;
       }
-      /* Phần game (chỉ xuất hiện sau khi xác nhận tên) */
+      
+      /* Phần game (sẽ hiện sau khi xác nhận tên) */
       #gameArea {
         display: none;
         margin-top: 50px;
       }
-      /* Phần hiển thị tên người chơi */
+      
+      /* Thông tin người chơi */
       #playerInfo {
         margin-bottom: 20px;
         font-size: 24px;
         font-weight: bold;
       }
+      
       /* Hộp quà */
       #giftBox {
         width: 200px;
@@ -35,6 +40,7 @@
         border-radius: 10px;
         background: #ddd;
       }
+      
       /* Nắp hộp */
       .lid {
         width: 100%;
@@ -45,6 +51,7 @@
         left: 0;
         transition: transform 0.5s ease;
       }
+      
       /* Thân hộp */
       .box {
         width: 100%;
@@ -54,7 +61,8 @@
         bottom: 0;
         left: 0;
       }
-      /* Biểu tượng kết quả (tick hoặc X) */
+      
+      /* Biểu tượng kết quả (tick hoặc X) chồng lên hộp quà */
       #resultIcon {
         position: absolute;
         top: 50%;
@@ -65,84 +73,94 @@
         display: none;
         z-index: 10;
       }
+      
       button {
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
-        margin-top: 10px;
+        margin: 10px;
       }
+      
       /* Phần quảng cáo */
       #adArea {
-        display: none; 
+        display: none;
         margin-top: 20px;
       }
+      
       #adBanner {
+        width: 300px;
+        margin: 0 auto;
+        padding: 15px;
         border: 2px solid #888;
-        padding: 10px;
+        border-radius: 5px;
+        background: #fff;
       }
     </style>
   </head>
   <body>
-    <!-- Phần nhập tên -->
+    <!-- PHẦN NHẬP TÊN -->
     <div id="inputArea">
       <input type="text" id="playerName" placeholder="Nhập tên Minecraft của bạn">
       <br>
       <button id="confirmBtn" onclick="saveName()">Xác nhận Tên</button>
     </div>
-
-    <!-- Phần game xuất hiện sau khi xác nhận tên -->
+    
+    <!-- PHẦN GAME: SẼ HIỆN SAU KHI NGƯỜI DÙNG XÁC NHẬN TÊN -->
     <div id="gameArea">
       <div id="playerInfo">
         <span id="displayName"></span>
       </div>
       
-      <!-- Hộp quà -->
+      <!-- Hộp quà với nắp (.lid), thân hộp (.box) và phần hiển thị kết quả (#resultIcon) -->
       <div id="giftBox">
         <div class="lid"></div>
         <div class="box"></div>
-        <!-- Phần hiển thị kết quả (tick hoặc X) -->
         <div id="resultIcon"></div>
       </div>
-      <br>
-      <!-- Nút mở quà dành cho kết quả thắng/thua -->
-      <button onclick="spinSlot(true)">Mở Quà (Thắng)</button>
-      <button onclick="spinSlot(false)">Mở Quà (Thua)</button>
-      <br><br>
+      
+      <!-- Các nút thao tác -->
+      <div>
+        <!-- Nút mở quà: truyền tham số true (thắng) hoặc false (thua) theo kết quả game -->
+        <button onclick="spinSlot(true)">Mở Quà (Thắng)</button>
+        <button onclick="spinSlot(false)">Mở Quà (Thua)</button>
+      </div>
+      
       <!-- Nút xem quảng cáo -->
-      <button onclick="watchAd()">Xem Quảng Cáo</button>
-      <!-- Banner quảng cáo -->
+      <div>
+        <button onclick="watchAd()">Xem Quảng Cáo</button>
+      </div>
+      
+      <!-- Phần banner quảng cáo -->
       <div id="adArea">
         <div id="adBanner">
-          <p>Quảng cáo của bạn ở đây</p>
-          <!-- Bạn có thể thay bằng hình ảnh hoặc nội dung khác -->
+          <p>Đây là banner quảng cáo của bạn.</p>
+          <p>Cập nhật nội dung quảng cáo ở đây.</p>
         </div>
       </div>
     </div>
-
+    
     <script>
-      // Hàm xác nhận tên: khi người dùng nhập tên và nhấn "Xác nhận Tên"
+      // Hàm xác nhận tên: Khi người dùng bấm "Xác nhận Tên", tên được hiển thị và phần game hiện ra
       function saveName() {
         var name = document.getElementById("playerName").value.trim();
         if (!name) {
           alert("❗ Vui lòng nhập tên Minecraft.");
           return;
         }
-        // Hiển thị tên người chơi
         document.getElementById("displayName").innerText = name;
-        // Sau khi xác nhận, ẩn phần nhập tên và hiện phần game
         document.getElementById("inputArea").style.display = "none";
         document.getElementById("gameArea").style.display = "block";
       }
-
+      
       /*
-        Hàm spinSlot nhận tham số Boolean (gameResult):
-          - true  => thắng, hiển thị tick (✅, màu xanh)
-          - false => thua, hiển thị X (❌, màu đỏ)
-        Hiệu ứng: nắp hộp quay xuống, sau đó biểu tượng kết quả xuất hiện chồng lên hộp quà.
+        Hàm spinSlot nhận một tham số Boolean (gameResult):
+          - true: thắng → hiển thị tick (✅, màu xanh)
+          - false: thua → hiển thị X (❌, màu đỏ)
+        Hiệu ứng: nắp hộp quay và sau 500ms, kết quả sẽ hiển thị chồng lên hộp quà.
       */
       function spinSlot(gameResult) {
         var resultIcon = document.getElementById("resultIcon");
-        // Đặt lại trạng thái: nắp hộp khép lại và ẩn icon kết quả
+        // Reset nắp hộp về trạng thái khép
         document.querySelector(".lid").style.transform = "rotate(0deg)";
         resultIcon.style.display = "none";
         // Sau 500ms, mở nắp hộp và hiển thị kết quả
@@ -158,40 +176,44 @@
           resultIcon.style.display = "block";
         }, 500);
       }
-
+      
       /*
-        Hàm watchAd: Khi người dùng bấm "Xem Quảng Cáo",
-        - Hiển thị banner quảng cáo trong 5 giây,
-        - Sau đó ẩn banner và gửi thông báo qua Discord.
+        Hàm watchAd: Khi người dùng bấm "Xem Quảng Cáo"
+          - Hiển thị banner quảng cáo trong 5 giây,
+          - Sau đó ẩn banner và gửi thông báo qua Discord.
       */
       function watchAd() {
         var adArea = document.getElementById("adArea");
         adArea.style.display = "block";
         // Giả lập thời gian xem quảng cáo (5 giây)
-        setTimeout(function(){
+        setTimeout(function() {
           adArea.style.display = "none";
           var name = document.getElementById("displayName").innerText || "Người chơi";
-          // Gửi thông báo qua Discord thông qua webhook
+          // Gửi thông báo qua Discord – thay thế webhook URL bên dưới bằng URL thật của bạn.
           notifyDiscord(name + " vừa xem quảng cáo.");
         }, 5000);
       }
-
+      
       /*
         Hàm notifyDiscord gửi thông báo tới Discord thông qua webhook.
-        Lưu ý: Thay thế "YOUR_DISCORD_WEBHOOK_URL" bằng URL webhook thực sự của bạn.
+        Hãy thay thế "YOUR_DISCORD_WEBHOOK_URL" bằng URL webhook thực sự của bạn.
       */
       function notifyDiscord(message) {
-        var webhookUrl = "https://discord.com/api/webhooks/1379029584976154736/sHOFSSQRBxwqdTaAeZLkuVZssU0-bf_xJV3L0SLkLOH3G278ZfOY90merIwXjga7VgC2";
+        var webhookUrl = "https://discord.com/api/webhooks/1379029584976154736/sHOFSSQRBxwqdTaAeZLkuVZssU0-bf_xJV3L0SLkLOH3G278ZfOY90merIwXjga7VgC2"; // THAY CHỈNH URL ở đây
         fetch(webhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: message })
         })
-        .then(response => console.log("Discord notification sent:", response))
-        .catch(error => console.error("Error sending Discord notification:", error));
+        .then(response => {
+          console.log("Discord notification sent:", response);
+        })
+        .catch(error => {
+          console.error("Error sending Discord notification:", error);
+        });
       }
-
-      // Mỗi lần tải lại trang, luôn yêu cầu nhập tên (không lưu tên)
+      
+      // Khi tải lại trang, luôn hiện phần nhập tên và ẩn phần game
       window.onload = function() {
         document.getElementById("inputArea").style.display = "block";
         document.getElementById("gameArea").style.display = "none";
