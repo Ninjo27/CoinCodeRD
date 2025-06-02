@@ -123,6 +123,19 @@
       80% { transform: translate(5px, 0); }
       100% { transform: translate(0, 0); }
     }
+    #playerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#editNameButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
     /* Box (thân hộp) */
     #giftBox .box {
   position: absolute;
@@ -254,7 +267,16 @@
     <button onclick="saveName()">Xác nhận Tên</button>
     <button onclick="editName()">Đổi Tên</button>
   </div>
-  
+  <div id="playerInfo">
+  <span id="displayName">Tên người chơi</span>
+  <button id="editNameButton" onclick="editName()">✏️</button>
+</div>
+<div id="inputArea" style="display: none;">
+  <input type="text" id="playerName" placeholder="Nhập tên mới">
+  <br>
+  <button onclick="saveName()">Xác nhận Tên</button>
+</div>
+
   <!-- Giao diện chính -->
   <div id="gameArea" style="display:none; position: relative;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
@@ -343,7 +365,7 @@
     <script type="text/javascript" src="//favourableafter.com/daed7a5ed457d1095ecedf49ee9a3008/invoke.js"></script>
   </div>
 <script>
-   function saveName() {
+  function saveName() {
     const name = document.getElementById("playerName").value.trim();
     if (!name) {
       alert("❗ Vui lòng nhập tên Minecraft.");
@@ -354,18 +376,17 @@
   }
 
   function editName() {
-    // Hiển thị lại ô nhập tên và ẩn phần quay thưởng khi đổi tên
-    document.getElementById("inputArea").style.display = "block";
-    document.getElementById("gameArea").style.display = "none";
-    document.getElementById("playerName").value = localStorage.getItem("playerName");
+    document.getElementById("inputArea").style.display = "block"; // Hiển thị ô nhập tên
+    document.getElementById("playerInfo").style.display = "none"; // Ẩn tên cũ
   }
 
   function showGameSection() {
     const name = localStorage.getItem("playerName");
     if (name) {
+      document.getElementById("displayName").innerText = name;
+      document.getElementById("playerInfo").style.display = "flex";
       document.getElementById("inputArea").style.display = "none";
       document.getElementById("gameArea").style.display = "block";
-      document.getElementById("displayName").innerText = name;
     } else {
       document.getElementById("gameArea").style.display = "none";
     }
@@ -374,20 +395,8 @@
   window.onload = function() {
     showGameSection();
   };
-
-  function showGameSection() {
-    const name = localStorage.getItem("playerName");
-    if (name) {
-      document.getElementById("inputArea").style.display = "none";
-      document.getElementById("gameArea").style.display = "block";
-      document.getElementById("displayName").innerText = name;
-    }
-  }
-
-  window.onload = function() {
-    showGameSection();
-  };
 </script>
+
 
 
   </script>
