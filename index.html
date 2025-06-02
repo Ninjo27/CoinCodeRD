@@ -27,6 +27,12 @@
     button:disabled {
       background-color: gray;
     }
+    #inputArea {
+  margin-top: 50px;
+  position: relative; /* Dòng này giúp ô nhập tên hiển thị đúng */
+  z-index: 100; /* Đảm bảo nút không bị che khuất */
+}
+
     #status {
       margin-top: 20px;
       font-size: 18px;
@@ -542,8 +548,10 @@ const name = ""; // Luôn yêu cầu nhập lại tên mỗi lần tải trang
     }
     
     window.onload = function() {
-      showGameSection();
-    };
+  document.getElementById("inputArea").style.display = "block";
+  document.getElementById("gameArea").style.display = "none";
+};
+
   </script>
 </body>
 </html>
