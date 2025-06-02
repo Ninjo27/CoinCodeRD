@@ -421,14 +421,25 @@
       showGameSection();
     }
     
-    function showGameSection() {
-      const name = localStorage.getItem("playerName");
-      if (name) {
-        document.getElementById("inputArea").style.display = "none";
-        document.getElementById("gameArea").style.display = "block";
-        document.getElementById("displayName").innerText = name;
-      }
+<script>
+  function showGameSection() {
+    const name = localStorage.getItem("playerName");
+
+    if (name) {
+      document.getElementById("displayName").innerText = name; // Hiển thị tên mới
+      document.getElementById("playerInfo").style.display = "flex";
+      document.getElementById("inputArea").style.display = "none";
+      document.getElementById("gameArea").style.display = "block";
+    } else {
+      document.getElementById("gameArea").style.display = "none";
     }
+  }
+
+  window.onload = function() {
+    showGameSection();
+  };
+</script>
+
     
     function confirmLevel() {
       const radios = document.getElementsByName("level");
