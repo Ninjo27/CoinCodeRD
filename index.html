@@ -357,10 +357,12 @@
         alert("❗ Vui lòng nhập tên Minecraft.");
         return;
       }
+      localStorage.setItem("playerName", name);
       showGameSection();
     }
     
     function showGameSection() {
+      const name = localStorage.getItem("playerName");
       if (name) {
         document.getElementById("inputArea").style.display = "none";
         document.getElementById("gameArea").style.display = "block";
@@ -411,6 +413,7 @@
     }
     
     function spinSlot() {
+      const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
       const spinButton = document.getElementById("spinButton");
