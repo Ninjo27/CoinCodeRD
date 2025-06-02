@@ -349,7 +349,7 @@
       alert("❗ Vui lòng nhập tên Minecraft.");
       return;
     }
-    localStorage.setItem("playerName", name);
+    document.getElementById("displayName").innerText = name;
     showGameSection();
   }
 
@@ -361,7 +361,7 @@
   }
 
   function showGameSection() {
-    const name = localStorage.getItem("playerName");
+const name = ""; // Luôn yêu cầu nhập lại tên mỗi lần tải trang
     if (name) {
       document.getElementById("inputArea").style.display = "none";
       document.getElementById("gameArea").style.display = "block";
