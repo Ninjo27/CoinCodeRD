@@ -123,23 +123,6 @@
       80% { transform: translate(5px, 0); }
       100% { transform: translate(0, 0); }
     }
-#playerInfo {
-  display: flex;
-  justify-content: center; /* Căn giữa theo chiều ngang */
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-  width: 100%; /* Đảm bảo phần này chiếm toàn bộ chiều rộng */
-}
-
-
-#editNameButton {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
     /* Box (thân hộp) */
     #giftBox .box {
   position: absolute;
@@ -271,16 +254,7 @@
     <button onclick="saveName()">Xác nhận Tên</button>
     <button onclick="editName()">Đổi Tên</button>
   </div>
-  <div id="playerInfo">
-  <span id="displayName">Tên người chơi</span>
-  <button id="editNameButton" onclick="editName()">✏️</button>
-</div>
-<div id="inputArea" style="display: none;">
-  <input type="text" id="playerName" placeholder="Nhập tên mới">
-  <br>
-  <button onclick="saveName()">Xác nhận Tên</button>
-</div>
-
+  
   <!-- Giao diện chính -->
   <div id="gameArea" style="display:none; position: relative;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
@@ -380,19 +354,18 @@
   }
 
   function editName() {
-    document.getElementById("inputArea").style.display = "block"; // Hiển thị ô nhập tên
-    document.getElementById("playerInfo").style.display = "none"; // Ẩn tên cũ
+    // Hiển thị lại ô nhập tên để người dùng có thể đổi tên
+    document.getElementById("inputArea").style.display = "block";
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("playerName").value = localStorage.getItem("playerName"); // Giữ tên cũ để sửa
   }
 
   function showGameSection() {
     const name = localStorage.getItem("playerName");
     if (name) {
-      document.getElementById("displayName").innerText = name;
-      document.getElementById("playerInfo").style.display = "flex";
       document.getElementById("inputArea").style.display = "none";
       document.getElementById("gameArea").style.display = "block";
-    } else {
-      document.getElementById("gameArea").style.display = "none";
+      document.getElementById("displayName").innerText = name;
     }
   }
 
@@ -400,7 +373,6 @@
     showGameSection();
   };
 </script>
-
 
 
   </script>
@@ -421,25 +393,14 @@
       showGameSection();
     }
     
-<script>
-  function showGameSection() {
-    const name = localStorage.getItem("playerName");
-
-    if (name) {
-      document.getElementById("displayName").innerText = name; // Hiển thị tên mới
-      document.getElementById("playerInfo").style.display = "flex";
-      document.getElementById("inputArea").style.display = "none";
-      document.getElementById("gameArea").style.display = "block";
-    } else {
-      document.getElementById("gameArea").style.display = "none";
+    function showGameSection() {
+      const name = localStorage.getItem("playerName");
+      if (name) {
+        document.getElementById("inputArea").style.display = "none";
+        document.getElementById("gameArea").style.display = "block";
+        document.getElementById("displayName").innerText = name;
+      }
     }
-  }
-
-  window.onload = function() {
-    showGameSection();
-  };
-</script>
-
     
     function confirmLevel() {
       const radios = document.getElementsByName("level");
@@ -484,21 +445,6 @@
     }
     
     function spinSlot() {
-      const name = localStorage.getItem("playerName");
-    if (!name) {
-      alert("❗ Bạn phải nhập và xác nhận tên trước khi mở quà!");
-      return;
-    }
-
-    let result = Math.random() < 0.5 ? "❌" : "✅";
-    let resultIcon = document.getElementById("resultIcon");
-
-    resultIcon.innerText = result;
-    resultIcon.style.color = result === "✅" ? "green" : "red";
-    resultIcon.style.display = "block";
-
-    document.querySelector(".lid").style.transform = "rotate(-45deg)";
-  
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
