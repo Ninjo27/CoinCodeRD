@@ -123,11 +123,15 @@
       80% { transform: translate(5px, 0); }
       100% { transform: translate(0, 0); }
     }
-    #playerInfo {
+#playerInfo {
   display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
   align-items: center;
   gap: 10px;
+  text-align: center;
+  width: 100%; /* Đảm bảo phần này chiếm toàn bộ chiều rộng */
 }
+
 
 #editNameButton {
   background: none;
