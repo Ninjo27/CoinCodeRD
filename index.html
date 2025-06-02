@@ -1,580 +1,201 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Xem Quảng Cáo & Mở Quà Thưởng</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f4f4;
-      padding: 50px;
-      position: relative;
-    }
-    input, button {
-      font-size: 18px;
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: gray;
-    }
-    #status {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #0033cc;
-    }
-    
-    /* Fade-in effect */
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    /* Container hiệu ứng thắng/thua */
-    #effectContainer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 100;
-    }
-    .fireworks {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 200px;
-      height: 200px;
-      margin: -100px 0 0 -100px;
-      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,215,0,0.5) 50%, transparent 70%);
-      animation: fireworksAnim 1s ease-out forwards;
-    }
-    @keyframes fireworksAnim {
-      0% { transform: scale(0); opacity: 1; }
-      100% { transform: scale(2.5); opacity: 0; }
-    }
-    .smoke {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 150px;
-      height: 150px;
-      margin: -75px 0 0 -75px;
-      background: radial-gradient(circle, rgba(128,128,128,0.8) 0%, transparent 70%);
-      filter: blur(4px);
-      animation: smokeAnim 1s ease-out forwards;
-    }
-    @keyframes smokeAnim {
-      0% { transform: scale(0); opacity: 1; }
-      100% { transform: scale(2); opacity: 0; }
-    }
-    /* Confetti effect */
-    @keyframes confettiFall {
-      0% { transform: scale(0) rotate(0deg); opacity: 1; }
-      100% { transform: scale(1.5) rotate(720deg); opacity: 0; }
-    }
-    .confetti {
-      position: absolute;
-      width: 8px;
-      height: 12px;
-      opacity: 1;
-      animation: confettiFall 1s linear forwards;
-    }
-    /* Win glow effect for giftBox */
-    @keyframes winGlow {
-      0% { box-shadow: 0 0 0px rgba(255,215,0,0); }
-      50% { box-shadow: 0 0 30px 10px rgba(255,215,0,0.8); }
-      100% { box-shadow: 0 0 0px rgba(255,215,0,0); }
-    }
-    #giftBox.winGlow {
-      animation: winGlow 1s ease-in-out;
-    }
-    
-    /* Đảm bảo giftBox có position relative để con phần tử định vị theo nó */
-#giftBox {
-  position: relative;
-  /* Các style khác của hộp quà */
-}
-
-/* Style cho icon kết quả */
-#resultIcon {
-  position: absolute;
-  top: 50%;              /* Đưa về giữa theo trục dọc */
-  left: 50%;             /* Đưa về giữa theo trục ngang */
-  transform: translate(-50%, -50%);
-  font-size: 80px;       /* Bạn có thể điều chỉnh kích cỡ theo ý muốn */
-  font-weight: bold;
-  display: none;         /* Ẩn mặc định */
-  z-index: 10;           /* Chôn lên trên các phần tử khác trong giftBox */
-}
-
-    /* Shake effect */
-    #giftBox.shake {
-      animation: shake 0.5s;
-    }
-    @keyframes shake {
-      0% { transform: translate(0, 0); }
-      20% { transform: translate(-5px, 0); }
-      40% { transform: translate(5px, 0); }
-      60% { transform: translate(-5px, 0); }
-      80% { transform: translate(5px, 0); }
-      100% { transform: translate(0, 0); }
-    }
-    /* Box (thân hộp) */
-    #giftBox .box {
-  position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 60%;
-      background: linear-gradient(145deg, #ffeb3b, #fdd835);
-      border: 2px solid #e0a800;
-      border-radius: 10px;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
-    }
-    /* Lid (nắp hộp) */
-    #giftBox .lid {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 40%;
-      background: linear-gradient(145deg, #ff9800, #f57c00);
-      border: 2px solid #e65100;
-      border-bottom: none;
-      border-radius: 10px 10px 0 0;
-      transform-origin: top center;
-      transition: transform 0.8s ease-out;
-    }
-    /* Hiệu ứng "nổ" của nắp: bay thẳng lên trời (và không trở về vị trí ban đầu) */
-    @keyframes explodeLid {
-      0% { transform: translateY(0) rotateX(0deg); opacity: 1; }
-      50% { transform: translateY(-80px) rotateX(-20deg); opacity: 1; }
-      100% { transform: translateY(-300px) rotateX(-45deg); opacity: 0; }
-    }
-    .lid.explode {
-      animation: explodeLid 0.8s forwards;
-    }
-    
-    /* Kết quả hiển thị (Tick hoặc X) */
-    #resultIcon {
-      font-size: 60px;
-      margin-top: 10px;
-      height: 70px;
-    }
-    
-    /* Style cho phần lựa chọn mức độ */
-    #levelSelection {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .levels {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 10px;
-    }
-    .levelOption {
-      display: inline-block;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .levelOption:hover {
-      border-color: #28a745;
-    }
-    .levelOption input {
-      display: none;
-    }
-    .levelOption input:checked + span {
-      background-color: #28a745;
-      color: white;
-      border-radius: 5px;
-      padding: 5px 10px;
-    }
-    .levelOption span {
-      font-size: 18px;
-      display: block;
-    }
-/* Banner bên trái */
-    #ad-left {
-      position: fixed;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 160px;
-      height: 600px;
-      z-index: 9999;
-    }
-
-    /* Banner bên phải */
-    #ad-right {
-      position: fixed;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 160px;
-      height: 600px;
-      z-index: 9999;
-    }
-
-    /* Banner ngang dưới cùng */
-    #ad-bottom {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 728px;
-      height: 90px;
-      z-index: 9999;
-    }
-
-    /* Khung viền ngăn cách quảng cáo và phần quay thưởng */
-    #gameArea {
-      border: 3px solid #ccc;
-      padding: 20px;
-      margin: 20px auto;
-      width: 80%;
-      background: white;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    }
-
-  </style>
-</head>
-<body>
-  <h1>🎁 Xem Quảng Cáo và Mở Quà Thưởng 🎁</h1>
-  <!-- Khu vực nhập tên -->
-  <div id="inputArea">
-    <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
-    <br>
-    <button onclick="saveName()">Xác nhận Tên</button>
-  </div>
-  
-  <!-- Giao diện chính -->
-  <div id="gameArea" style="display:none; position: relative;">
-    <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
-    
-    <!-- Lựa chọn mức độ -->
-    <div id="levelSelection">
-      <p>Chọn Mức Độ:</p>
-      <div class="levels">
-        <label class="levelOption">
-          <input type="radio" name="level" value="thuong">
-          <span>Thường (10%)</span>
-        </label>
-        <label class="levelOption">
-          <input type="radio" name="level" value="hien">
-          <span>Hiếm (5%)</span>
-        </label>
-        <label class="levelOption">
-          <input type="radio" name="level" value="sieuhien">
-          <span>Siêu hiếm (1%)</span>
-        </label>
-      </div>
-      <button onclick="confirmLevel()">Xác nhận Mức độ</button>
+  <head>
+    <meta charset="UTF-8">
+    <title>CoinCodeRD Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
+      /* Phần nhập tên */
+      #inputArea {
+        margin-top: 50px;
+      }
+      /* Phần game (chỉ xuất hiện sau khi xác nhận tên) */
+      #gameArea {
+        display: none;
+        margin-top: 50px;
+      }
+      /* Phần hiển thị tên người chơi */
+      #playerInfo {
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      /* Hộp quà */
+      #giftBox {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        position: relative;
+        border: 2px solid #444;
+        border-radius: 10px;
+        background: #ddd;
+      }
+      /* Nắp hộp */
+      .lid {
+        width: 100%;
+        height: 50px;
+        background: #ccc;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: transform 0.5s ease;
+      }
+      /* Thân hộp */
+      .box {
+        width: 100%;
+        height: 150px;
+        background: #eee;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+      /* Biểu tượng kết quả (tick hoặc X) */
+      #resultIcon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 80px;
+        font-weight: bold;
+        display: none;
+        z-index: 10;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      /* Phần quảng cáo */
+      #adArea {
+        display: none; 
+        margin-top: 20px;
+      }
+      #adBanner {
+        border: 2px solid #888;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Phần nhập tên -->
+    <div id="inputArea">
+      <input type="text" id="playerName" placeholder="Nhập tên Minecraft của bạn">
+      <br>
+      <button id="confirmBtn" onclick="saveName()">Xác nhận Tên</button>
     </div>
-    
-    <!-- Nút xem quảng cáo -->
-    <button id="adButton" onclick="watchAd()" style="display:none;">Xem Quảng Cáo</button>
-    
-    <!-- Nút mở quà -->
-    <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Mở Quà</button>
-    
-    <!-- Container hộp quà -->
-   <div id="giftBox">
-  <div class="lid"></div>
-  <div class="box"></div>
-  <!-- Phần tử này sẽ hiển thị kết quả (X hoặc ✓) -->
-  <div id="resultIcon"></div>
-</div>
 
-    
-    <!-- Kết quả hiển thị (Tick hoặc X) -->
-    <div id="resultIcon"></div>
-    <div id="status"></div>
-    
-    <!-- Container hiệu ứng (fireworks, smoke, confetti) -->
-    <div id="effectContainer"></div>
-  </div>
+    <!-- Phần game xuất hiện sau khi xác nhận tên -->
+    <div id="gameArea">
+      <div id="playerInfo">
+        <span id="displayName"></span>
+      </div>
+      
+      <!-- Hộp quà -->
+      <div id="giftBox">
+        <div class="lid"></div>
+        <div class="box"></div>
+        <!-- Phần hiển thị kết quả (tick hoặc X) -->
+        <div id="resultIcon"></div>
+      </div>
+      <br>
+      <!-- Nút mở quà dành cho kết quả thắng/thua -->
+      <button onclick="spinSlot(true)">Mở Quà (Thắng)</button>
+      <button onclick="spinSlot(false)">Mở Quà (Thua)</button>
+      <br><br>
+      <!-- Nút xem quảng cáo -->
+      <button onclick="watchAd()">Xem Quảng Cáo</button>
+      <!-- Banner quảng cáo -->
+      <div id="adArea">
+        <div id="adBanner">
+          <p>Quảng cáo của bạn ở đây</p>
+          <!-- Bạn có thể thay bằng hình ảnh hoặc nội dung khác -->
+        </div>
+      </div>
+    </div>
 
-
-  <!-- Banner dọc bên trái -->
-  <div id="ad-left">
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '5cff9394494cd690f0abfe61455852d6',
-        'format' : 'iframe',
-        'height' : 600,
-        'width' : 160,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//favourableafter.com/5cff9394494cd690f0abfe61455852d6/invoke.js"></script>
-  </div>
-
-  <!-- Banner dọc bên phải -->
-  <div id="ad-right">
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '5cff9394494cd690f0abfe61455852d6',
-        'format' : 'iframe',
-        'height' : 600,
-        'width' : 160,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//favourableafter.com/5cff9394494cd690f0abfe61455852d6/invoke.js"></script>
-  </div>
-
-
-  <!-- Banner ngang dưới cùng -->
-  <div id="ad-bottom">
-    <script type="text/javascript">
-      atOptions = {
-        'key' : 'daed7a5ed457d1095ecedf49ee9a3008',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="//favourableafter.com/daed7a5ed457d1095ecedf49ee9a3008/invoke.js"></script>
-  </div>
-<script>
-  function saveName() {
-    const name = document.getElementById("playerName").value.trim();
-    if (!name) {
-      alert("❗ Vui lòng nhập tên Minecraft.");
-      return;
-    }
-    document.getElementById("displayName").innerText = name;
-    showGameSection();
-  }
-
-  function showGameSection() {
-const name = ""; // Luôn yêu cầu nhập lại tên mỗi lần tải trang
-    if (name) {
-      document.getElementById("inputArea").style.display = "none";
-      document.getElementById("gameArea").style.display = "block";
-      document.getElementById("displayName").innerText = name;
-    }
-  }
-
-  window.onload = function() {
-    showGameSection();
-  };
-</script>
-
-
-  </script>
-  <script type="text/javascript" src="//favourableafter.com/24678cb83d718b9c45010aa631c7d6ea/invoke.js"></script>
-</div>
-  
-  <script>
-    let selectedProbability = 0;
-    let selectedLevelName = "";
-    
-   function saveName() {
-    const name = document.getElementById("playerName").value.trim();
-    if (!name) {
-      alert("❗ Vui lòng nhập tên.");
-      return;
-    }
-
-    document.getElementById("displayName").innerText = name;
-    document.getElementById("inputArea").style.display = "none";
-    document.getElementById("gameArea").style.display = "block";
-  }
-
-  function showGameSection() {
-    document.getElementById("inputArea").style.display = "block";
-    document.getElementById("gameArea").style.display = "none";
-  }
-
-  window.onload = function() {
-    showGameSection();
-  };
-    
-    function confirmLevel() {
-      const radios = document.getElementsByName("level");
-      let levelChosen = null;
-      for (let i = 0; i < radios.length; i++) {
-        if (radios[i].checked) {
-          levelChosen = radios[i].value;
-          break;
+    <script>
+      // Hàm xác nhận tên: khi người dùng nhập tên và nhấn "Xác nhận Tên"
+      function saveName() {
+        var name = document.getElementById("playerName").value.trim();
+        if (!name) {
+          alert("❗ Vui lòng nhập tên Minecraft.");
+          return;
         }
+        // Hiển thị tên người chơi
+        document.getElementById("displayName").innerText = name;
+        // Sau khi xác nhận, ẩn phần nhập tên và hiện phần game
+        document.getElementById("inputArea").style.display = "none";
+        document.getElementById("gameArea").style.display = "block";
       }
-      if (!levelChosen) {
-        alert("❗ Vui lòng chọn mức độ.");
-        return;
-      }
-      if (levelChosen === "thuong") {
-        selectedProbability = 0.10;
-        selectedLevelName = "Thường (10%)";
-      } else if (levelChosen === "hien") {
-        selectedProbability = 0.05;
-        selectedLevelName = "Hiếm (5%)";
-      } else if (levelChosen === "sieuhien") {
-        selectedProbability = 0.01;
-        selectedLevelName = "Siêu hiếm (1%)";
-      }
-      document.getElementById("levelSelection").style.display = "none";
-      document.getElementById("adButton").style.display = "inline-block";
-    }
-    
-    function watchAd() {
-      if (!playerName) return;
-      window.open("https://favourableafter.com/a27wdsgvkg?key=a17d0d294dc6fb83b60c99ae9f8203d4", "_blank");
-      const adButton = document.getElementById("adButton");
-      adButton.disabled = true;
-      adButton.innerText = "Đang xem quảng cáo...";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 3 giây...";
-      setTimeout(() => {
-        document.getElementById("status").innerText = "";
-        adButton.style.display = "none";
-        document.getElementById("spinButton").style.display = "inline-block";
-      }, 3000);
-    }
-    
-     // Hàm spinSlot nhận kết quả của trò chơi: true (thắng) hoặc false (thua)
-  function spinSlot(gameResult) {
-    let resultIcon = document.getElementById("resultIcon");
 
-    // Dựa vào kết quả của trò chơi, hiển thị khoản hiệu tương ứng
-    if (gameResult) {
-      resultIcon.innerText = "✅";
-      resultIcon.style.color = "green";
-    } else {
-      resultIcon.innerText = "❌";
-      resultIcon.style.color = "red";
-    }
-    
-    resultIcon.style.display = "block"; // Hiển thị kết quả lên hộp quà
-
-    // Hiệu ứng mở nắp hộp quà
-    document.querySelector(".lid").style.transform = "rotate(-45deg)";
-  }
-      
-      const spinButton = document.getElementById("spinButton");
-      spinButton.disabled = true;
-      spinButton.innerText = "Đang mở quà...";
-      
-      const giftBox = document.getElementById("giftBox");
-      giftBox.style.display = "block";
-      
-      // Reset trạng thái của nắp cho vòng mới:
-      const lid = document.querySelector("#giftBox .lid");
-      lid.classList.remove("explode");
-      
-      // Xóa kết quả, thông báo cũ:
-      document.getElementById("resultIcon").innerHTML = "";
-      document.getElementById("status").innerHTML = "";
-      document.getElementById("effectContainer").innerHTML = "";
-      
-      // Bắt đầu hiệu ứng rung nhẹ:
-      giftBox.classList.add("shake");
-      
-      // Sau 600ms, dừng rung và bật hiệu ứng "nổ" của nắp
-      setTimeout(() => {
-        giftBox.classList.remove("shake");
-        lid.classList.add("explode");
-      }, 600);
-      
-      // Sau 2500ms, quyết định kết quả và hiển thị hiệu ứng thắng/thua:
-      setTimeout(() => {
-        let win = (Math.random() < selectedProbability);
-        const resultIcon = document.getElementById("resultIcon");
-        const effectContainer = document.getElementById("effectContainer");
-        if (win) {
-          resultIcon.innerHTML = "<span class='fade-in'>✔️</span>";
-          document.getElementById("status").innerHTML =
-            "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "";
-          
-          // Hiệu ứng fireworks
-          let fireworksEl = document.createElement("div");
-          fireworksEl.className = "fireworks";
-          effectContainer.appendChild(fireworksEl);
-          // Hiệu ứng confetti
-          createConfetti();
-          // Hiệu ứng glow cho hộp quà
-          giftBox.classList.add("winGlow");
-          setTimeout(() => {
-            giftBox.classList.remove("winGlow");
-          }, 1000);
-          
-          // Gửi thông tin qua Discord
-          fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              content: `Người chơi **${playerName}** đã trúng thưởng mức **${selectedLevelName}**`
-            })
-          });
-        } else {
-          resultIcon.innerHTML = "<span class='fade-in'>❌</span>";
-          document.getElementById("status").innerHTML =
-            "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!";
-          let smokeEl = document.createElement("div");
-          smokeEl.className = "smoke";
-          effectContainer.appendChild(smokeEl);
-          setTimeout(() => {
-            smokeEl.remove();
-          }, 1000);
-        }
-        
-        // Sau 1500ms, reset giao diện để vòng mới hoàn tất.
-        setTimeout(() => {
-          spinButton.disabled = false;
-          spinButton.innerText = "Mở Quà Lại";
-          spinButton.style.display = "none";
-          giftBox.style.display = "none";
-          // Không reset lớp "explode" của nắp, nên khi quay mới nó sẽ được reset trong spinSlot()
-          document.getElementById("adButton").style.display = "inline-block";
-          document.getElementById("adButton").disabled = false;
-          document.getElementById("adButton").innerText = "Xem Quảng Cáo";
-        }, 1500);
-      }, 2500);
-    }
-    
-    // Hàm tạo rắc confetti khi thắng
-    function createConfetti() {
-      const effectContainer = document.getElementById("effectContainer");
-      for (let i = 0; i < 20; i++) {
-        const conf = document.createElement("div");
-        conf.classList.add("confetti");
-        conf.style.left = Math.random() * 100 + "%";
-        conf.style.top = Math.random() * 100 + "%";
-        conf.style.backgroundColor = getRandomColor();
-        conf.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
-        effectContainer.appendChild(conf);
-        setTimeout(() => {
-          conf.remove();
-        }, 1000);
+      /*
+        Hàm spinSlot nhận tham số Boolean (gameResult):
+          - true  => thắng, hiển thị tick (✅, màu xanh)
+          - false => thua, hiển thị X (❌, màu đỏ)
+        Hiệu ứng: nắp hộp quay xuống, sau đó biểu tượng kết quả xuất hiện chồng lên hộp quà.
+      */
+      function spinSlot(gameResult) {
+        var resultIcon = document.getElementById("resultIcon");
+        // Đặt lại trạng thái: nắp hộp khép lại và ẩn icon kết quả
+        document.querySelector(".lid").style.transform = "rotate(0deg)";
+        resultIcon.style.display = "none";
+        // Sau 500ms, mở nắp hộp và hiển thị kết quả
+        setTimeout(function() {
+          document.querySelector(".lid").style.transform = "rotate(-45deg)";
+          if (gameResult) {
+            resultIcon.innerText = "✅";
+            resultIcon.style.color = "green";
+          } else {
+            resultIcon.innerText = "❌";
+            resultIcon.style.color = "red";
+          }
+          resultIcon.style.display = "block";
+        }, 500);
       }
-    }
-    
-    function getRandomColor() {
-      const colors = ["#FF5733", "#FFC300", "#DAF7A6", "#FF33F6", "#33D4FF", "#FF8F33"];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-    
-    window.onload = function() {
-      showGameSection();
-    };
-  </script>
-</body>
+
+      /*
+        Hàm watchAd: Khi người dùng bấm "Xem Quảng Cáo",
+        - Hiển thị banner quảng cáo trong 5 giây,
+        - Sau đó ẩn banner và gửi thông báo qua Discord.
+      */
+      function watchAd() {
+        var adArea = document.getElementById("adArea");
+        adArea.style.display = "block";
+        // Giả lập thời gian xem quảng cáo (5 giây)
+        setTimeout(function(){
+          adArea.style.display = "none";
+          var name = document.getElementById("displayName").innerText || "Người chơi";
+          // Gửi thông báo qua Discord thông qua webhook
+          notifyDiscord(name + " vừa xem quảng cáo.");
+        }, 5000);
+      }
+
+      /*
+        Hàm notifyDiscord gửi thông báo tới Discord thông qua webhook.
+        Lưu ý: Thay thế "YOUR_DISCORD_WEBHOOK_URL" bằng URL webhook thực sự của bạn.
+      */
+      function notifyDiscord(message) {
+        var webhookUrl = "https://discord.com/api/webhooks/1379029584976154736/sHOFSSQRBxwqdTaAeZLkuVZssU0-bf_xJV3L0SLkLOH3G278ZfOY90merIwXjga7VgC2";
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: message })
+        })
+        .then(response => console.log("Discord notification sent:", response))
+        .catch(error => console.error("Error sending Discord notification:", error));
+      }
+
+      // Mỗi lần tải lại trang, luôn yêu cầu nhập tên (không lưu tên)
+      window.onload = function() {
+        document.getElementById("inputArea").style.display = "block";
+        document.getElementById("gameArea").style.display = "none";
+      }
+    </script>
+  </body>
 </html>
