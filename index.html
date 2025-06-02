@@ -473,6 +473,21 @@
     }
     
     function spinSlot() {
+      const name = localStorage.getItem("playerName");
+    if (!name) {
+      alert("❗ Bạn phải nhập và xác nhận tên trước khi mở quà!");
+      return;
+    }
+
+    let result = Math.random() < 0.5 ? "❌" : "✅";
+    let resultIcon = document.getElementById("resultIcon");
+
+    resultIcon.innerText = result;
+    resultIcon.style.color = result === "✅" ? "green" : "red";
+    resultIcon.style.display = "block";
+
+    document.querySelector(".lid").style.transform = "rotate(-45deg)";
+  
       const playerName = localStorage.getItem("playerName");
       if (!playerName) return;
       
