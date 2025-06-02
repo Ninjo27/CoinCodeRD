@@ -9,6 +9,7 @@
       text-align: center;
       background-color: #f4f4f4;
       padding: 50px;
+      position: relative;
     }
     input, button {
       font-size: 18px;
@@ -31,7 +32,8 @@
       font-size: 18px;
       color: #0033cc;
     }
-    /* Fade-in effect */
+    
+    /* Hiệu ứng fade-in cho thông báo */
     .fade-in {
       animation: fadeIn 1.5s ease-in-out;
     }
@@ -40,15 +42,55 @@
       to { opacity: 1; }
     }
     
+    /* Container hiệu ứng thắng/thua */
+    #effectContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .fireworks {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      margin: -100px 0 0 -100px;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,215,0,0.5) 50%, transparent 70%);
+      animation: fireworksAnim 1s ease-out forwards;
+    }
+    @keyframes fireworksAnim {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+    .smoke {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+      background: radial-gradient(circle, rgba(128,128,128,0.8) 0%, transparent 70%);
+      filter: blur(4px);
+      animation: smokeAnim 1s ease-out forwards;
+    }
+    @keyframes smokeAnim {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    
     /* Gift Box styles */
     #giftBox {
       position: relative;
       width: 200px;
       height: 200px;
-      margin: 70px auto 20px auto; /* Dời xuống một xíu để không che phía trên */
+      margin: 70px auto 20px auto; /* dời xuống để không che phần trên */
       display: none;
     }
-    /* Shake effect */
+    /* Hiệu ứng rung (shake) */
     #giftBox.shake {
       animation: shake 0.5s;
     }
@@ -83,8 +125,9 @@
       border-bottom: none;
       border-radius: 10px 10px 0 0;
       transform-origin: top center;
+      transition: transform 0.8s ease-out;
     }
-    /* Explosion animation cho nắp hộp: nắp sẽ được "bắn" thẳng lên trời */
+    /* Hiệu ứng "nổ" của nắp: bay thẳng lên trời và không quay lại vị trí ban đầu */
     @keyframes explodeLid {
       0% { transform: translateY(0) rotateX(0deg); opacity: 1; }
       50% { transform: translateY(-80px) rotateX(-20deg); opacity: 1; }
@@ -94,14 +137,14 @@
       animation: explodeLid 0.8s forwards;
     }
     
-    /* Kết quả hiển thị (Tick hoặc X) */
+    /* Hiển thị kết quả (Tick hoặc X) */
     #resultIcon {
       font-size: 60px;
       margin-top: 10px;
       height: 70px;
     }
     
-    /* Phần lựa chọn mức độ */
+    /* Style cho phần lựa chọn mức độ */
     #levelSelection {
       margin-top: 20px;
       text-align: center;
@@ -141,7 +184,7 @@
 <body>
   <h1>🎁 Xem Quảng Cáo và Mở Quà Thưởng 🎁</h1>
   
-  <!-- Nhập tên -->
+  <!-- Khu vực nhập tên -->
   <div id="inputArea">
     <input type="text" id="playerName" placeholder="Tên Minecraft của bạn">
     <br>
@@ -149,7 +192,7 @@
   </div>
   
   <!-- Giao diện chính -->
-  <div id="gameArea" style="display:none;">
+  <div id="gameArea" style="display:none; position: relative;">
     <p><strong>Tên của bạn:</strong> <span id="displayName"></span></p>
     
     <!-- Lựa chọn mức độ -->
@@ -184,9 +227,12 @@
       <div class="box"></div>
     </div>
     
-    <!-- Kết quả -->
+    <!-- Kết quả hiển thị (Tick hoặc X) -->
     <div id="resultIcon"></div>
     <div id="status"></div>
+    
+    <!-- Container hiệu ứng (fireworks / smoke) -->
+    <div id="effectContainer"></div>
   </div>
   
   <script>
@@ -264,34 +310,41 @@
       
       const giftBox = document.getElementById("giftBox");
       giftBox.style.display = "block";
-      
-      // Bắt đầu hiệu ứng: cho hộp quà rung nhẹ
-      giftBox.classList.add("shake");
-      
       const lid = document.querySelector("#giftBox .lid");
-      lid.classList.remove("explode"); // Xóa hiệu ứng nắp đã có (nếu có)
+      // Reset lại trạng thái của nắp cho vòng mới:
+      lid.classList.remove("explode");
       
-      // Ẩn kết quả cũ, thông báo cũ
+      // Xóa kết quả và thông báo cũ:
       document.getElementById("resultIcon").innerHTML = "";
       document.getElementById("status").innerHTML = "";
       
-      // Sau 600ms, dừng hiệu ứng rung và kích hoạt nắp "nổ" ra (bắn lên trời)
+      // Bắt đầu hiệu ứng rung nhẹ:
+      giftBox.classList.add("shake");
+      
+      // Sau 600ms, dừng hiệu ứng rung và kích hoạt hiệu ứng "nổ" của nắp
       setTimeout(() => {
         giftBox.classList.remove("shake");
         lid.classList.add("explode");
       }, 600);
       
-      // Sau khoảng 2000ms (sau khi nắp bay lên), quyết định kết quả
+      // Sau 2500ms, quyết định kết quả và hiển thị icon kết quả cùng hiệu ứng thắng/thua:
       setTimeout(() => {
-        // Loại bỏ lớp explosion (để reset cho vòng sau)
-        lid.classList.remove("explode");
-        
         let win = (Math.random() < selectedProbability);
         const resultIcon = document.getElementById("resultIcon");
+        const effectContainer = document.getElementById("effectContainer");
         if (win) {
           resultIcon.innerHTML = "<span class='fade-in'>✔️</span>";
           document.getElementById("status").innerHTML =
             "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
+          
+          let fireworksEl = document.createElement("div");
+          fireworksEl.className = "fireworks";
+          effectContainer.appendChild(fireworksEl);
+          setTimeout(() => {
+            effectContainer.removeChild(fireworksEl);
+          }, 1000);
+          
+          // Gửi thông tin qua Discord (nếu cần)
           fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -303,21 +356,27 @@
           resultIcon.innerHTML = "<span class='fade-in'>❌</span>";
           document.getElementById("status").innerHTML =
             "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+          
+          let smokeEl = document.createElement("div");
+          smokeEl.className = "smoke";
+          effectContainer.appendChild(smokeEl);
+          setTimeout(() => {
+            effectContainer.removeChild(smokeEl);
+          }, 1000);
         }
         
-        // Sau 1500ms, reset lại giao diện
+        // Sau 1500ms, reset giao diện cho vòng mới.
         setTimeout(() => {
           spinButton.disabled = false;
           spinButton.innerText = "Mở Quà Lại";
           spinButton.style.display = "none";
           giftBox.style.display = "none";
-          // Reset lại lớp của nắp hộp
-          lid.classList.remove("explode");
+          // Không reset lớp "explode" của nắp, để hiệu ứng nắp bay lên không chuyển vị trí về ban đầu;
           document.getElementById("adButton").style.display = "inline-block";
           document.getElementById("adButton").disabled = false;
           document.getElementById("adButton").innerText = "Xem Quảng Cáo";
         }, 1500);
-      }, 2000);
+      }, 2500);
     }
     
     window.onload = function() {
@@ -326,4 +385,3 @@
   </script>
 </body>
 </html>
-
