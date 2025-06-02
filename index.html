@@ -343,7 +343,7 @@
     <script type="text/javascript" src="//favourableafter.com/daed7a5ed457d1095ecedf49ee9a3008/invoke.js"></script>
   </div>
 <script>
-  function saveName() {
+   function saveName() {
     const name = document.getElementById("playerName").value.trim();
     if (!name) {
       alert("❗ Vui lòng nhập tên Minecraft.");
@@ -354,11 +354,26 @@
   }
 
   function editName() {
-    // Hiển thị lại ô nhập tên để người dùng có thể đổi tên
+    // Hiển thị lại ô nhập tên và ẩn phần quay thưởng khi đổi tên
     document.getElementById("inputArea").style.display = "block";
     document.getElementById("gameArea").style.display = "none";
-    document.getElementById("playerName").value = localStorage.getItem("playerName"); // Giữ tên cũ để sửa
+    document.getElementById("playerName").value = localStorage.getItem("playerName");
   }
+
+  function showGameSection() {
+    const name = localStorage.getItem("playerName");
+    if (name) {
+      document.getElementById("inputArea").style.display = "none";
+      document.getElementById("gameArea").style.display = "block";
+      document.getElementById("displayName").innerText = name;
+    } else {
+      document.getElementById("gameArea").style.display = "none";
+    }
+  }
+
+  window.onload = function() {
+    showGameSection();
+  };
 
   function showGameSection() {
     const name = localStorage.getItem("playerName");
