@@ -103,14 +103,24 @@
       animation: winGlow 1s ease-in-out;
     }
     
-    /* Gift Box styles */
-    #giftBox {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      margin: 70px auto 20px auto;
-      display: none;
-    }
+    /* Đảm bảo giftBox có position relative để con phần tử định vị theo nó */
+#giftBox {
+  position: relative;
+  /* Các style khác của hộp quà */
+}
+
+/* Style cho icon kết quả */
+#resultIcon {
+  position: absolute;
+  top: 50%;              /* Đưa về giữa theo trục dọc */
+  left: 50%;             /* Đưa về giữa theo trục ngang */
+  transform: translate(-50%, -50%);
+  font-size: 80px;       /* Bạn có thể điều chỉnh kích cỡ theo ý muốn */
+  font-weight: bold;
+  display: none;         /* Ẩn mặc định */
+  z-index: 10;           /* Chôn lên trên các phần tử khác trong giftBox */
+}
+
     /* Shake effect */
     #giftBox.shake {
       animation: shake 0.5s;
@@ -285,10 +295,13 @@
     <button id="spinButton" onclick="spinSlot()" style="display:none;">Bấm Để Mở Quà</button>
     
     <!-- Container hộp quà -->
-    <div id="giftBox">
-      <div class="lid"></div>
-      <div class="box"></div>
-    </div>
+   <div id="giftBox">
+  <div class="lid"></div>
+  <div class="box"></div>
+  <!-- Phần tử này sẽ hiển thị kết quả (X hoặc ✓) -->
+  <div id="resultIcon"></div>
+</div>
+
     
     <!-- Kết quả hiển thị (Tick hoặc X) -->
     <div id="resultIcon"></div>
@@ -437,8 +450,24 @@ const name = ""; // Luôn yêu cầu nhập lại tên mỗi lần tải trang
       }, 3000);
     }
     
-    function spinSlot() {
-      if (!playerName) return;
+     // Hàm spinSlot nhận kết quả của trò chơi: true (thắng) hoặc false (thua)
+  function spinSlot(gameResult) {
+    let resultIcon = document.getElementById("resultIcon");
+
+    // Dựa vào kết quả của trò chơi, hiển thị khoản hiệu tương ứng
+    if (gameResult) {
+      resultIcon.innerText = "✅";
+      resultIcon.style.color = "green";
+    } else {
+      resultIcon.innerText = "❌";
+      resultIcon.style.color = "red";
+    }
+    
+    resultIcon.style.display = "block"; // Hiển thị kết quả lên hộp quà
+
+    // Hiệu ứng mở nắp hộp quà
+    document.querySelector(".lid").style.transform = "rotate(-45deg)";
+  }
       
       const spinButton = document.getElementById("spinButton");
       spinButton.disabled = true;
