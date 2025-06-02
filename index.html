@@ -436,12 +436,12 @@
       const adButton = document.getElementById("adButton");
       adButton.disabled = true;
       adButton.innerText = "Đang xem quảng cáo...";
-      document.getElementById("status").innerText = "⏳ Vui lòng chờ 5 giây...";
+      document.getElementById("status").innerText = "⏳ Vui lòng chờ 3 giây...";
       setTimeout(() => {
         document.getElementById("status").innerText = "";
         adButton.style.display = "none";
         document.getElementById("spinButton").style.display = "inline-block";
-      }, 5000);
+      }, 3000);
     }
     
     function spinSlot() {
@@ -495,7 +495,7 @@
             giftBox.classList.remove("winGlow");
           }, 1000);
           
-          // Gửi thông tin qua Discord (nếu cần)
+          // Gửi thông tin qua Discord
           fetch("https://discord.com/api/webhooks/1378766894030393395/bPVZ8AMpX1woGC16YxW8j9OV4cpDtqA14P1etqjMtyfPCWL0YnDe61M6GqWgQEJBZc3i", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
