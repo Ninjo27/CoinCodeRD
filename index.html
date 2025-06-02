@@ -33,7 +33,7 @@
       color: #0033cc;
     }
     
-    /* Hiệu ứng fade-in cho thông báo */
+    /* Fade-in effect */
     .fade-in {
       animation: fadeIn 1.5s ease-in-out;
     }
@@ -81,16 +81,37 @@
       0% { transform: scale(0); opacity: 1; }
       100% { transform: scale(2); opacity: 0; }
     }
+    /* Confetti effect */
+    @keyframes confettiFall {
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(1.5) rotate(720deg); opacity: 0; }
+    }
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      opacity: 1;
+      animation: confettiFall 1s linear forwards;
+    }
+    /* Win glow effect for giftBox */
+    @keyframes winGlow {
+      0% { box-shadow: 0 0 0px rgba(255,215,0,0); }
+      50% { box-shadow: 0 0 30px 10px rgba(255,215,0,0.8); }
+      100% { box-shadow: 0 0 0px rgba(255,215,0,0); }
+    }
+    #giftBox.winGlow {
+      animation: winGlow 1s ease-in-out;
+    }
     
     /* Gift Box styles */
     #giftBox {
       position: relative;
       width: 200px;
       height: 200px;
-      margin: 70px auto 20px auto; /* dời xuống để không che phần trên */
+      margin: 70px auto 20px auto;
       display: none;
     }
-    /* Hiệu ứng rung (shake) */
+    /* Shake effect */
     #giftBox.shake {
       animation: shake 0.5s;
     }
@@ -127,7 +148,7 @@
       transform-origin: top center;
       transition: transform 0.8s ease-out;
     }
-    /* Hiệu ứng "nổ" của nắp: bay thẳng lên trời và không quay lại vị trí ban đầu */
+    /* Hiệu ứng "nổ" của nắp: bay thẳng lên trời (và không trở về vị trí ban đầu) */
     @keyframes explodeLid {
       0% { transform: translateY(0) rotateX(0deg); opacity: 1; }
       50% { transform: translateY(-80px) rotateX(-20deg); opacity: 1; }
@@ -137,7 +158,7 @@
       animation: explodeLid 0.8s forwards;
     }
     
-    /* Hiển thị kết quả (Tick hoặc X) */
+    /* Kết quả hiển thị (Tick hoặc X) */
     #resultIcon {
       font-size: 60px;
       margin-top: 10px;
@@ -231,7 +252,7 @@
     <div id="resultIcon"></div>
     <div id="status"></div>
     
-    <!-- Container hiệu ứng (fireworks / smoke) -->
+    <!-- Container hiệu ứng (fireworks, smoke, confetti) -->
     <div id="effectContainer"></div>
   </div>
   
@@ -310,24 +331,26 @@
       
       const giftBox = document.getElementById("giftBox");
       giftBox.style.display = "block";
+      
+      // Reset trạng thái của nắp cho vòng mới:
       const lid = document.querySelector("#giftBox .lid");
-      // Reset lại trạng thái của nắp cho vòng mới:
       lid.classList.remove("explode");
       
-      // Xóa kết quả và thông báo cũ:
+      // Xóa kết quả, thông báo cũ:
       document.getElementById("resultIcon").innerHTML = "";
       document.getElementById("status").innerHTML = "";
+      document.getElementById("effectContainer").innerHTML = "";
       
       // Bắt đầu hiệu ứng rung nhẹ:
       giftBox.classList.add("shake");
       
-      // Sau 600ms, dừng hiệu ứng rung và kích hoạt hiệu ứng "nổ" của nắp
+      // Sau 600ms, dừng rung và bật hiệu ứng "nổ" của nắp
       setTimeout(() => {
         giftBox.classList.remove("shake");
         lid.classList.add("explode");
       }, 600);
       
-      // Sau 2500ms, quyết định kết quả và hiển thị icon kết quả cùng hiệu ứng thắng/thua:
+      // Sau 2500ms, quyết định kết quả và hiển thị hiệu ứng thắng/thua:
       setTimeout(() => {
         let win = (Math.random() < selectedProbability);
         const resultIcon = document.getElementById("resultIcon");
@@ -337,11 +360,16 @@
           document.getElementById("status").innerHTML =
             "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
           
+          // Hiệu ứng fireworks
           let fireworksEl = document.createElement("div");
           fireworksEl.className = "fireworks";
           effectContainer.appendChild(fireworksEl);
+          // Hiệu ứng confetti
+          createConfetti();
+          // Hiệu ứng glow cho hộp quà
+          giftBox.classList.add("winGlow");
           setTimeout(() => {
-            effectContainer.removeChild(fireworksEl);
+            giftBox.classList.remove("winGlow");
           }, 1000);
           
           // Gửi thông tin qua Discord (nếu cần)
@@ -356,27 +384,48 @@
           resultIcon.innerHTML = "<span class='fade-in'>❌</span>";
           document.getElementById("status").innerHTML =
             "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
-          
           let smokeEl = document.createElement("div");
           smokeEl.className = "smoke";
           effectContainer.appendChild(smokeEl);
           setTimeout(() => {
-            effectContainer.removeChild(smokeEl);
+            smokeEl.remove();
           }, 1000);
         }
         
-        // Sau 1500ms, reset giao diện cho vòng mới.
+        // Sau 1500ms, reset giao diện để vòng mới hoàn tất.
         setTimeout(() => {
           spinButton.disabled = false;
           spinButton.innerText = "Mở Quà Lại";
           spinButton.style.display = "none";
           giftBox.style.display = "none";
-          // Không reset lớp "explode" của nắp, để hiệu ứng nắp bay lên không chuyển vị trí về ban đầu;
+          // Không reset lớp "explode" của nắp, nên khi quay mới nó sẽ được reset trong spinSlot()
           document.getElementById("adButton").style.display = "inline-block";
           document.getElementById("adButton").disabled = false;
           document.getElementById("adButton").innerText = "Xem Quảng Cáo";
         }, 1500);
       }, 2500);
+    }
+    
+    // Hàm tạo rắc confetti khi thắng
+    function createConfetti() {
+      const effectContainer = document.getElementById("effectContainer");
+      for (let i = 0; i < 20; i++) {
+        const conf = document.createElement("div");
+        conf.classList.add("confetti");
+        conf.style.left = Math.random() * 100 + "%";
+        conf.style.top = Math.random() * 100 + "%";
+        conf.style.backgroundColor = getRandomColor();
+        conf.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+        effectContainer.appendChild(conf);
+        setTimeout(() => {
+          conf.remove();
+        }, 1000);
+      }
+    }
+    
+    function getRandomColor() {
+      const colors = ["#FF5733", "#FFC300", "#DAF7A6", "#FF33F6", "#33D4FF", "#FF8F33"];
+      return colors[Math.floor(Math.random() * colors.length)];
     }
     
     window.onload = function() {
