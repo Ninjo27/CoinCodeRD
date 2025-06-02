@@ -35,7 +35,7 @@
     
     /* Fade-in effect */
     .fade-in {
-      animation: fadeIn 1.5s ease-in-out;
+      animation: fadeIn 0.5s ease-in-out;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -358,7 +358,7 @@
         if (win) {
           resultIcon.innerHTML = "<span class='fade-in'>✔️</span>";
           document.getElementById("status").innerHTML =
-            "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "!</span>";
+            "<span class='fade-in'>✅ Chúc mừng, bạn đã trúng thưởng mức " + selectedLevelName + "";
           
           // Hiệu ứng fireworks
           let fireworksEl = document.createElement("div");
@@ -377,13 +377,13 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              content: `Người chơi **${playerName}** đã trúng thưởng mức ${selectedLevelName}`
+              content: `Người chơi **${playerName}** đã trúng thưởng mức **${selectedLevelName}**`
             })
           });
         } else {
           resultIcon.innerHTML = "<span class='fade-in'>❌</span>";
           document.getElementById("status").innerHTML =
-            "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!</span>";
+            "<span class='fade-in'>❌ Rất tiếc, bạn không trúng thưởng. Hãy thử lại!";
           let smokeEl = document.createElement("div");
           smokeEl.className = "smoke";
           effectContainer.appendChild(smokeEl);
